@@ -45,26 +45,48 @@ public class Game : MonoBehaviour
                 Unit unit = row[i];
                 if (unit is object && unit.allegiance == turn) {
                     Unit target;
+                    Unit attacker;
                     int moves = unit.speed;
                     int attacks = unit.attacks;
+                    int embarked_attacks = 0;
+                    if (unit is Vehicle && unit.embarked is object) {
+                        embarked_attacks = unit.embarked.attacks;
+                    }
                     while (moves > 0 || target is object) {
-                        // Get a target
-                        for (int r=1; r <= unit.range; r++) {
-                            if (row[i-r] is object) {
-                                target = row[i-r];
-                                break;
-                            }
-                            else if (i - r == 0) {
-                                target = players[turn ? 1 : 0];
-                                break;
+
+                        target = null;
+                        attacker = null;
+
+                        // Assign unit as attacker if able
+                        if (attacks > 0) {
+                            attacker = unit;
+                        }
+
+                        // Assign embarked unit as attacker if able
+                        else if (embarked_attacks > 0) {
+                            attacker = unit.embarked;
+                        }
+
+                        // If attacking then get a target
+                        if (attacker is object) {
+                            for (int r=1; r <= attacker.range; r++) {
+                                if (row[i-r] is object) {
+                                    target = row[i-r];
+                                    break;
+                                }
+                                else if (i - r == 0) {
+                                    target = players[turn ? 1 : 0];
+                                    break;
+                                }
                             }
                         }
 
-                        // Attack if able
+                        // If found target then attack
                         if (target is object) {
                             // Insert code for attacking
-                            attacks -= 1;
+                            embarked_attacks -= 1;
                         }
+
                         // Otherwise move if able
                         else if (moves > 0) {
                             // Insert code for moving

@@ -12,6 +12,8 @@ public class EventHandler
 
     public void subscribe(string type, Action<Event> method)
     {
+        //add a system to remove events
+        
         if (type == DONE)
         {
             done_events.Add(method);
