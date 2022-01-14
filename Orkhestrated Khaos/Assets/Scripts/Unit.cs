@@ -13,6 +13,8 @@ public class Unit : MonoBehaviour
     public int cost;
     public int upkeep;
     public int loyalty;
+    public int x_position;
+    public int y_position;
 
     // Start is called before the first frame update
     void Start()
