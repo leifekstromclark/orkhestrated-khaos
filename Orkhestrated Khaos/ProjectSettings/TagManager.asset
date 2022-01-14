@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 278644405
+    locked: 0
+  - name: Cards
+    uniqueID: 77284459
+    locked: 0
+  - name: Sigils
+    uniqueID: 1351871405
+    locked: 0
+  - name: Extras
+    uniqueID: 4251015007
+    locked: 0
