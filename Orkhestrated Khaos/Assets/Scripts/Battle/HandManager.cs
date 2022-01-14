@@ -48,15 +48,18 @@ public class HandManager : MonoBehaviour
 
 
         if (am_dragging){
-            Debug.Log("Dragging...");
+            // Debug.Log("Dragging...");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            dragged_card.position = (ray.origin); 
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit)){
+                dragged_card.position = new Vector3(hit.point.x, hit.point.y, 0f);
+            }
             if (Input.GetMouseButtonUp(0)){
                 am_dragging = false;
                 board_script.spawn_orc(dragged_card);
                 cards.Remove(dragged_card);
                 Destroy(dragged_card.gameObject);
-            }    
+            }
         }
 
         if (Input.GetMouseButtonDown(0)){
@@ -65,20 +68,24 @@ public class HandManager : MonoBehaviour
             Debug.Log(mouseray); Debug.Log(cards.Count);
             if (Physics.Raycast(mouseray, out hit)){
                 // Reset card selection values
-                if (cards[hit.collider.gameObject.transform]) {
-
-                    dragged_card = hit.collider.gameObject.transform; am_dragging = true;
-                }
-                else{
+                if (!cards.ContainsKey(hit.transform)){
                     foreach (var key in new List<Transform>(cards.Keys)){
                         cards[key] = false;
                     }
-                cards[hit.collider.gameObject.transform] = true; // Mark clicked card as selected
                 }
+                else {
+                    if (cards[hit.transform]) {
+                        dragged_card = hit.transform; am_dragging = true;
+                    }
+                    else cards[hit.transform] = true; // Mark clicked card as selected
+                }
+
 
                 Debug.Log(hit.transform.name);
     
                 Debug.Log("This hit at " + hit.point);
+
+                
             }
             else {
                 foreach (var key in new List<Transform>(cards.Keys)){
