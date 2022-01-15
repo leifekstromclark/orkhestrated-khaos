@@ -5,6 +5,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
 
+    private Game game;
     public int power;
     public int health;
     public int speed;
@@ -25,5 +26,21 @@ public class Unit : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public int[][] get_placement_locations(int position) {
+
+    }
+
+    public int[][] get_swap_locations(int[] position) {
+        
+    }
+
+    public void place(int[] position) {
+
+    }
+
+    public void swap(int[] position) {
+
     }
 }

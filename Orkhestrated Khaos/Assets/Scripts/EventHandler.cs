@@ -6,49 +6,22 @@ public class EventHandler
     private string MOVE = "move";
     private string ATTACK = "attack";
 
-    private List<Action<Event>> done_events = new List<Action<Event>>();
-    private List<Action<Event>> move_events = new List<Action<Event>>();
-    private List<Action<Event>> attack_events = new List<Action<Event>>();
+    private Dictionary<string, List<Unit>> subscribed = new Dictionary<string, List<Unit>>();
 
-    public void subscribe(string type, Action<Event> method)
-    {
-        //add a system to remove events
-        
-        if (type == DONE)
-        {
-            done_events.Add(method);
-        }
-        else if (type == MOVE)
-        {
-            move_events.Add(method);
-        }
-        else if (type == ATTACK)
-        {
-            attack_events.Add(method);
-        }
+    public EventHandler() {
+        subscribed.Add("done", new List<Unit>());
+        subscribed.Add("move", new List<Unit>());
+        subscribed.Add("attack", new List<Unit>());
     }
 
-    public void done(Done data)
+    public void subscribe(string type, object subscriber)
     {
-        foreach (Action<Event> method in done_events)
-        {
-            method(data);
-        }
+        subscribed[type].Add(subscriber);
     }
 
-    public void move(Move data)
-    {
-        foreach (Action<Event> method in move_events)
-        {
-            method(data);
-        }
-    }
-
-    public void attack(Attack data)
-    {
-        foreach (Action<Event> method in attack_events)
-        {
-            method(data);
+    public void trigger(string type, Event data) {
+        foreach (object subscriber in subscribed[type]) {
+            subscriber.receive_event(data);
         }
     }
 }
