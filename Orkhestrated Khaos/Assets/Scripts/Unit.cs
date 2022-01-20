@@ -28,6 +28,10 @@ public class Unit : MonoBehaviour
         
     }
 
+    public void receive_event(Event data) {
+
+    }
+
     public int[][] get_placement_locations(int position) {
 
     }
