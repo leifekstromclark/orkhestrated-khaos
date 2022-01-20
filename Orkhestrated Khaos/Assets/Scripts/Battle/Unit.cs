@@ -16,6 +16,7 @@ public class Unit : MonoBehaviour
     public int loyalty;
     public bool allegiance;
 
+
     // Start is called before the first frame update
     void Start()
     {
