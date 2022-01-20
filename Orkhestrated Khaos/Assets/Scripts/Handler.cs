@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-public class EventHandler
+public class Handler
 {
     private string DONE = "done";
     private string MOVE = "move";
@@ -9,7 +9,7 @@ public class EventHandler
 
     private Dictionary<string, List<Unit>> subscribed = new Dictionary<string, List<Unit>>();
 
-    public EventHandler() {
+    public Handler() {
         subscribed.Add("done", new List<Unit>());
         subscribed.Add("move", new List<Unit>());
         subscribed.Add("attack", new List<Unit>());
