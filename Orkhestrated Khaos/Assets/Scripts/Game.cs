@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,7 +45,8 @@ public class Game : MonoBehaviour
             for (int i=1; i < row.Length; i++) {
                 Unit unit = row[i];
                 if (unit is object && unit.allegiance == turn) {
-                    Unit target;
+                    Unit target_unit = null;
+                    Player target_player = null;
                     Unit attacker;
                     int moves = unit.speed;
                     int attacks = unit.attacks;
@@ -52,9 +54,10 @@ public class Game : MonoBehaviour
                     if (unit is Vehicle && unit.embarked is object) {
                         embarked_attacks = unit.embarked.attacks;
                     }
-                    while (moves > 0 || target is object) {
+                    while (moves > 0 || target_unit is object || target_player is object) {
 
-                        target = null;
+                        target_unit = null;
+                        target_player = null;
                         attacker = null;
 
                         // Assign unit as attacker if able
@@ -71,20 +74,36 @@ public class Game : MonoBehaviour
                         if (attacker is object) {
                             for (int r=1; r <= attacker.range; r++) {
                                 if (row[i-r] is object) {
-                                    target = row[i-r];
+                                    target_unit = row[i-r];
                                     break;
                                 }
                                 else if (i - r == 0) {
-                                    target = players[turn ? 1 : 0];
+                                    target_player = players[turn ? 1 : 0];
                                     break;
                                 }
                             }
                         }
 
-                        // If found target then attack
-                        if (target is object) {
+                        // If found target unit then attack
+                        if (target_unit is object) {
                             // Insert code for attacking
-                            embarked_attacks -= 1;
+                            if (attacker == unit) {
+                                attacks -= 1;
+                            }
+                            else {
+                                embarked_attacks -= 1;
+                            }
+                        }
+
+                        // If found target player then attack
+                        if (target_player is object) {
+                            // Insert code for attacking
+                            if (attacker == unit) {
+                                attacks -= 1;
+                            }
+                            else {
+                                embarked_attacks -= 1;
+                            }
                         }
 
                         // Otherwise move if able

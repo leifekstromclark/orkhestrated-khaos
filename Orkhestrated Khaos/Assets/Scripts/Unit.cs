@@ -15,6 +15,7 @@ public class Unit : MonoBehaviour
     public int upkeep;
     public int loyalty;
     public bool allegiance;
+    public Unit embarked;
 
 
     // Start is called before the first frame update
@@ -32,7 +33,7 @@ public class Unit : MonoBehaviour
     public void receive_event(Event data) {
 
     }
-
+    /*
     public int[][] get_placement_locations(int position) {
 
     }
@@ -48,4 +49,5 @@ public class Unit : MonoBehaviour
     public void swap(int[] position) {
 
     }
+    */
 }

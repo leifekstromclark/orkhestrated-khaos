@@ -5,8 +5,6 @@ using UnityEngine;
 public class Vehicle : Unit
 {
 
-    public Unit embarked;
-
     // Start is called before the first frame update
     void Start()
     {
