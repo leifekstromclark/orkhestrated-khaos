@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class Handler
+public class AbilityHandler
 {
 
     private Dictionary<string, List<Unit>> subscribed = new Dictionary<string, List<Unit>>();
 
-    public Handler() {
+    public AbilityHandler() {
         subscribed.Add("done", new List<Unit>());
         subscribed.Add("move", new List<Unit>());
         subscribed.Add("attack", new List<Unit>());
