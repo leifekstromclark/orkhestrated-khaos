@@ -226,6 +226,18 @@ PrefabInstance:
       value: in_hand_card
       objectReference: {fileID: 0}
     - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.b
+      value: 0.33935562
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.g
+      value: 0.33935562
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
       propertyPath: m_SortingOrder
       value: 2
       objectReference: {fileID: 0}
@@ -520,6 +532,18 @@ PrefabInstance:
       value: in_hand_card (2)
       objectReference: {fileID: 0}
     - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.b
+      value: 0.31016377
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.g
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.r
+      value: 0.4128946
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
       propertyPath: m_SortingOrder
       value: 2
       objectReference: {fileID: 0}
@@ -811,7 +835,9 @@ MonoBehaviour:
   - {fileID: 1911830916}
   - {fileID: 1396162342}
   - {fileID: 1704423262}
-  spacing: 0.2
+  spacing: 1.2
+  to_insert: 0
+  box_collider: {fileID: 0}
 --- !u!114 &1704423262 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: -4763259840055760015, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
@@ -841,6 +867,18 @@ PrefabInstance:
     - target: {fileID: 2623577596770560030, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
       propertyPath: m_Name
       value: in_hand_card (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.b
+      value: 0.37201852
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.g
+      value: 0.6773651
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
+      propertyPath: m_Color.r
+      value: 0.8301887
       objectReference: {fileID: 0}
     - target: {fileID: 3763577390570785139, guid: 2fe65e494e90df84789c8d8ade6238b9, type: 3}
       propertyPath: m_SortingOrder

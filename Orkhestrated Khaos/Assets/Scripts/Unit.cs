@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,6 @@ public class Unit : MonoBehaviour
     private int drag_tolerance = 20;
     
     public bool in_play;
-    public int hand_loc;
     public int[] board_loc;
     public Hand hand;
 
@@ -40,25 +40,28 @@ public class Unit : MonoBehaviour
     {
         if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
             is_dragging = true;
+            hand.units.Remove(this);
         }
         if (is_dragging) {
             Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (hand.box_collider.OverlapPoint(mouse_position)) {
+                float float_pos = (mouse_position.x - (hand.transform.position.x - ((float)hand.units.Count + 1) * hand.spacing / 2)) / hand.spacing;
+                int int_pos;
+                if (float_pos < 0) {
+                    int_pos = 0;
+                }
+                else if  (float_pos > hand.units.Count) {
+                    int_pos = hand.units.Count;
+                }
+                else {
+                    int_pos = (int)Math.Floor(float_pos);
+                }
+                hand.to_insert = int_pos;
+            }
+            else {
+                hand.to_insert = -1;
+            }
             transform.position = mouse_position;
-        }
-        else {
-            position();
-        }
-    }
-
-    public void position()
-    {
-        if (in_play) {
-
-        }
-        else {
-            int hand_length = hand.units.Count;
-            float width = box_collider.size.x * transform.lossyScale.x;
-            transform.position = hand.transform.position + new Vector3((width + hand.spacing) * hand_loc - ((float)hand_length - 1) * (width + hand.spacing) / 2, 0, 0);
         }
     }
 
@@ -68,14 +71,21 @@ public class Unit : MonoBehaviour
     }
 
     public void OnMouseUp() {
+        Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (is_dragging) {
-            //collider2D.OverLapPoint(mouse_position)
+            if (hand.box_collider.OverlapPoint(mouse_position)) {
+                hand.units.Insert(hand.to_insert, this);
+            }
+            else {
+                hand.units.Add(this);
+            }
         }
         else {
             //Display stats
         }
         is_dragging = false;
         pressed = false;
+        hand.to_insert = -1;
     }
 
     public void receive_event(Event data) {
