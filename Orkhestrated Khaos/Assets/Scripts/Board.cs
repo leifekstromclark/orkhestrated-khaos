@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Game : MonoBehaviour
+public class Board : MonoBehaviour
 {
     public Unit[][] board = new Unit[3][] {
         new Unit[7],
@@ -13,13 +13,15 @@ public class Game : MonoBehaviour
 
     public Player[] players = new Player[2];
 
+    public PolygonCollider2D poly_collider;
+
     public bool turn = true;
 
     //might get rid of unity stuff and make it just a normal class. not sure yet (keeping just in case)
     // Start is called before the first frame update
     void Start()
     {
-        
+        poly_collider = GetComponent<PolygonCollider2D>();
     }
 
     // Update is called once per frame

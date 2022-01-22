@@ -6,7 +6,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
 
-    public Game game;
+    public Board board;
     public int power;
     public int health;
     public int speed;
@@ -47,7 +47,7 @@ public class Unit : MonoBehaviour
             if (hand.box_collider.OverlapPoint(mouse_position)) {
                 float float_pos = (mouse_position.x - (hand.transform.position.x - ((float)hand.units.Count + 1) * hand.spacing / 2)) / hand.spacing;
                 int int_pos;
-                if (float_pos < 0) {
+                if (float_pos < 0f) {
                     int_pos = 0;
                 }
                 else if  (float_pos > hand.units.Count) {
@@ -60,7 +60,27 @@ public class Unit : MonoBehaviour
             }
             else {
                 hand.to_insert = -1;
+                if (board.poly_collider.OverlapPoint(mouse_position)) {
+                    int[] board_pos = new int[2];
+                    float y_pos = (mouse_position.y - board.transform.position.y) / board.transform.lossyScale.y;
+                    float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
+                    //y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
+                    if (y_pos < -0.265f) {
+                        board_pos[0] = 2;
+                    }
+                    else if (y_pos < 0.755f) {
+                        board_pos[0] = 1;
+                    }
+                    else {
+                        board_pos[0] = 0;
+                    }
+                    float x_pos = (mouse_position.x - board.transform.position.x) / board.transform.lossyScale.x + width / 2f;
+                    board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
+                    Debug.Log(board_pos[0]);
+                    Debug.Log(board_pos[1]);
+                }
             }
+
             transform.position = mouse_position;
         }
     }
