@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,66 +37,70 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition))) {
+            mouseDown();
+        }
+        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition))) {
+            mouseUp();
+        }
+
         if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
             is_dragging = true;
-            hand.units.Remove(this);
+            beginDrag();
         }
         if (is_dragging) {
-            Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (hand.box_collider.OverlapPoint(mouse_position)) {
-                float float_pos = (mouse_position.x - (hand.transform.position.x - ((float)hand.units.Count + 1) * hand.spacing / 2)) / hand.spacing;
-                int int_pos;
-                if (float_pos < 0f) {
-                    int_pos = 0;
-                }
-                else if  (float_pos > hand.units.Count) {
-                    int_pos = hand.units.Count;
-                }
-                else {
-                    int_pos = (int)Math.Floor(float_pos);
-                }
-                hand.to_insert = int_pos;
-            }
-            else {
-                hand.to_insert = -1;
-                if (board.poly_collider.OverlapPoint(mouse_position)) {
-                    int[] board_pos = new int[2];
-                    float y_pos = (mouse_position.y - board.transform.position.y) / board.transform.lossyScale.y;
-                    float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
-                    //y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
-                    if (y_pos < -0.265f) {
-                        board_pos[0] = 2;
-                    }
-                    else if (y_pos < 0.755f) {
-                        board_pos[0] = 1;
-                    }
-                    else {
-                        board_pos[0] = 0;
-                    }
-                    float x_pos = (mouse_position.x - board.transform.position.x) / board.transform.lossyScale.x + width / 2f;
-                    board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
-                    Debug.Log(board_pos[0]);
-                    Debug.Log(board_pos[1]);
-                }
-            }
-
-            transform.position = mouse_position;
+            drag();
         }
     }
 
-    public void OnMouseDown() {
+    public void mouseDown() {
         pressed = true;
         drag_start = Input.mousePosition;
     }
 
-    public void OnMouseUp() {
+    public void beginDrag() {
+        if (in_play) {
+
+        }
+        else {
+            hand.units.Remove(this);
+        }
+    }
+
+    public void drag() {
+        Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        bool inserting = hand.set_to_insert(mouse_position);
+        if (!inserting) {
+            if (board.poly_collider.OverlapPoint(mouse_position)) {
+                int[] board_pos = board.mouse_to_board_pos(mouse_position);
+                //make things light up and shit
+            }
+        }
+
+        transform.position = mouse_position;
+    }
+
+    public void mouseUp() {
         Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (is_dragging) {
-            if (hand.box_collider.OverlapPoint(mouse_position)) {
-                hand.units.Insert(hand.to_insert, this);
+            if (in_play) {
+                transform.position = board.board_positions[board_loc[0]][board_loc[1]];
             }
             else {
-                hand.units.Add(this);
+                if (hand.box_collider.OverlapPoint(mouse_position)) {
+                    hand.units.Insert(hand.to_insert, this);
+                }
+                else if (board.poly_collider.OverlapPoint(mouse_position)) {
+                    int[] board_pos = board.mouse_to_board_pos(mouse_position);
+                    //prlly call place function from here
+                    board.board[board_pos[0]][board_pos[1]] = this;
+                    board_loc = board_pos;
+                    in_play = true;
+                    transform.position = board.board_positions[board_pos[0]][board_pos[1]];
+                }
+                else {
+                    hand.units.Add(this);
+                }
             }
         }
         else {

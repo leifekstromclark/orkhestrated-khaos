@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,7 +19,30 @@ public class Hand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //probably change hand to only rearrange at certain points
         arrange();
+    }
+
+    public bool set_to_insert(Vector3 mouse_position) {
+        if (box_collider.OverlapPoint(mouse_position)) {
+            float float_pos = (mouse_position.x - (transform.position.x - ((float)units.Count + 1) * spacing / 2)) / spacing;
+            int int_pos;
+            if (float_pos < 0f) {
+                int_pos = 0;
+            }
+            else if  (float_pos > units.Count) {
+                int_pos = units.Count;
+            }
+            else {
+                int_pos = (int)Math.Floor(float_pos);
+            }
+            to_insert = int_pos;
+            return true;
+        }
+        else {
+            to_insert = -1;
+            return false;
+        }
     }
 
     public void arrange()

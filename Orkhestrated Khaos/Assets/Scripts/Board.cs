@@ -11,6 +11,12 @@ public class Board : MonoBehaviour
         new Unit[7]
     };
 
+    public Vector3[][] board_positions =  new Vector3[3][] {
+        new Vector3[7],
+        new Vector3[7],
+        new Vector3[7]
+    };
+
     public Player[] players = new Player[2];
 
     public PolygonCollider2D poly_collider;
@@ -22,12 +28,53 @@ public class Board : MonoBehaviour
     void Start()
     {
         poly_collider = GetComponent<PolygonCollider2D>();
+        set_board_positions();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void set_board_positions() {
+        for (int row = 0; row < 3; row++) {
+            float y;
+            if (row == 0) {
+                y = 0.755f + (1.505f - 0.755f) / 2f;
+            }
+            else if (row == 1) {
+                y = -0.265f + (0.755f + 0.265f) / 2f;
+            }
+            else {
+                y = -1.505f + (-0.265f + 1.505f) / 2f;
+            }
+            
+            for (int col = 0; col < 7; col++) {
+                float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
+                float x = width / 7f * (col - 3);
+                board_positions[row][col] = transform.position + new Vector3(x * transform.lossyScale.x, y * transform.lossyScale.y, 0f);
+            }
+        }
+    }
+
+    public int[] mouse_to_board_pos(Vector3 mouse_position) {
+        int[] board_pos = new int[2];
+        float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y;
+        float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
+        //y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
+        if (y_pos < -0.265f) {
+            board_pos[0] = 2;
+        }
+        else if (y_pos < 0.755f) {
+            board_pos[0] = 1;
+        }
+        else {
+            board_pos[0] = 0;
+        }
+        float x_pos = (mouse_position.x - transform.position.x) / transform.lossyScale.x + width / 2f;
+        board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
+        return board_pos;
     }
 
     public void reverse_board()
