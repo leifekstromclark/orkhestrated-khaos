@@ -37,10 +37,10 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition))) {
+        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(board.mouse_position)) {
             mouse_down();
         }
-        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition))) {
+        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(board.mouse_position)) {
             mouse_up();
         }
 
@@ -68,28 +68,27 @@ public class Unit : MonoBehaviour
     }
 
     public void drag() {
-        Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        bool inserting = hand.set_to_insert(mouse_position);
+        bool inserting = hand.set_to_insert(board.mouse_position);
         if (!inserting) {
-            if (board.poly_collider.OverlapPoint(mouse_position)) {
-                int[] board_pos = board.mouse_to_board_pos(mouse_position);
+            if (board.poly_collider.OverlapPoint(board.mouse_position)) {
+                int[] board_pos = board.mouse_to_board_pos(board.mouse_position);
                 //make things light up and shit
             }
         }
 
-        transform.position = mouse_position + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+        transform.position = board.mouse_position + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
     }
 
-    public void end_drag(Vector3 mouse_position) {
+    public void end_drag() {
         if (in_play) {
             transform.position = board.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
         }
         else {
-            if (hand.box_collider.OverlapPoint(mouse_position)) {
+            if (hand.box_collider.OverlapPoint(board.mouse_position)) {
                 hand.units.Insert(hand.to_insert, this);
             }
-            else if (board.poly_collider.OverlapPoint(mouse_position)) {
-                int[] board_pos = board.mouse_to_board_pos(mouse_position);
+            else if (board.poly_collider.OverlapPoint(board.mouse_position)) {
+                int[] board_pos = board.mouse_to_board_pos(board.mouse_position);
                 //prlly call place function from here
                 board.board[board_pos[0]][board_pos[1]] = this;
                 board_loc = board_pos;
@@ -103,9 +102,8 @@ public class Unit : MonoBehaviour
     }
 
     public void mouse_up() {
-        Vector3 mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (is_dragging) {
-            end_drag(mouse_position);
+            end_drag();
         }
         else {
             //Display stats

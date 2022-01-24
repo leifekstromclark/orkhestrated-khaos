@@ -23,6 +23,9 @@ public class Board : MonoBehaviour
 
     public bool turn = true;
 
+    //this is here for now though i may move it
+    public Vector3 mouse_position = new Vector3(0f, 0f, 0f);
+
     //might get rid of unity stuff and make it just a normal class. not sure yet (keeping just in case)
     // Start is called before the first frame update
     void Start()
@@ -34,7 +37,8 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //this is here for now though i may move it
+        mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     public void set_board_positions() {
