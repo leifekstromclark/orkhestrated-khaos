@@ -23,7 +23,8 @@ public class Hand : MonoBehaviour
         arrange();
     }
 
-    public bool set_to_insert(Vector3 mouse_position) {
+    //sets a to_insert value based on which part of the hand is moused over during a placement drag
+    public static bool set_to_insert(Vector3 mouse_position) {
         if (box_collider.OverlapPoint(mouse_position)) {
             float float_pos = (mouse_position.x - (transform.position.x - ((float)units.Count + 1) * spacing / 2)) / spacing;
             int int_pos;
@@ -45,7 +46,8 @@ public class Hand : MonoBehaviour
         }
     }
 
-    public void arrange()
+    //arranges cards in the hand list, skipping the to_insert space if one exists
+    public static void arrange()
     {
         int hand_length = units.Count;
         if (to_insert >= 0) {

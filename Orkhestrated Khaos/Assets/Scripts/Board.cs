@@ -44,7 +44,8 @@ public class Board : MonoBehaviour
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    public void set_board_positions() {
+    //function to set corresponding transform positions for each board space
+    public static void set_board_positions() {
         for (int row = 0; row < 3; row++) {
             float y;
             if (row == 0) {
@@ -65,7 +66,9 @@ public class Board : MonoBehaviour
         }
     }
 
-    public int[] mouse_to_board_pos(Vector3 mouse_position) {
+    //takes a position of the mouse in the world. returns a corresponding space on the board
+    public static int[] mouse_to_board_pos(Vector3 mouse_position) {
+        //WATCH OUT FOR 7 COL INDICES THIS IS NOT ACCOUNTED FOR AND COULD BE A PROBLEM (I DONT THINK IT IS RN THO)
         int[] board_pos = new int[2];
         float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y;
         float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
@@ -84,14 +87,14 @@ public class Board : MonoBehaviour
         return board_pos;
     }
 
-    public void reverse_board()
+    public static void reverse_board()
     {
         foreach (Unit[] row in board) {
             Array.Reverse(row);
         }
     }
 
-    public void combat()
+    public static void combat()
     {
         if (turn) {
             reverse_board();
