@@ -41,13 +41,13 @@ public class Board : MonoBehaviour
         for (int row = 0; row < 3; row++) {
             float y;
             if (row == 0) {
-                y = 0.755f + (1.505f - 0.755f) / 2f;
+                y = 0.755f + (1.505f - 0.755f) / 8f;
             }
             else if (row == 1) {
-                y = -0.265f + (0.755f + 0.265f) / 2f;
+                y = -0.265f + (0.755f + 0.265f) / 8f;
             }
             else {
-                y = -1.505f + (-0.265f + 1.505f) / 2f;
+                y = -1.505f + (-0.265f + 1.505f) / 8f;
             }
             
             for (int col = 0; col < 7; col++) {
