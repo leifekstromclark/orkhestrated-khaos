@@ -25,10 +25,9 @@ public class Board : MonoBehaviour
 
     public bool[][] valid_locations;
 
-    //this is here for now though i may move it
+    //THIS IS HERE FOR NOW THOUGH I MAY MOVE IT
     public Vector3 mouse_position = new Vector3(0f, 0f, 0f);
 
-    //might get rid of unity stuff and make it just a normal class. not sure yet (keeping just in case)
     // Start is called before the first frame update
     void Start()
     {
@@ -39,13 +38,13 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //this is here for now though i may move it
+        //THIS IS HERE FOR NOW THOUGH I MAY MOVE IT
         //convert screen mouse position to world mouse position
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
     //function to set corresponding transform positions for each board space
-    public static void set_board_positions() {
+    public void set_board_positions() {
         for (int row = 0; row < 3; row++) {
             float y;
             if (row == 0) {
@@ -67,12 +66,12 @@ public class Board : MonoBehaviour
     }
 
     //takes a position of the mouse in the world. returns a corresponding space on the board
-    public static int[] mouse_to_board_pos(Vector3 mouse_position) {
+    public int[] mouse_to_board_pos(Vector3 mouse_position) {
         //WATCH OUT FOR 7 COL INDICES THIS IS NOT ACCOUNTED FOR AND COULD BE A PROBLEM (I DONT THINK IT IS RN THO)
         int[] board_pos = new int[2];
         float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y;
         float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
-        //y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
+        //NOTE y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
         if (y_pos < -0.265f) {
             board_pos[0] = 2;
         }
@@ -87,14 +86,14 @@ public class Board : MonoBehaviour
         return board_pos;
     }
 
-    public static void reverse_board()
+    public void reverse_board()
     {
         foreach (Unit[] row in board) {
             Array.Reverse(row);
         }
     }
 
-    public static void combat()
+    public void combat()
     {
         if (turn) {
             reverse_board();

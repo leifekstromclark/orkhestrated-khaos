@@ -57,7 +57,7 @@ public class Unit : MonoBehaviour
     }
 
     //called when left mouse is pressed over unit's collider
-    public static void mouse_down() {
+    public void mouse_down() {
         //set boolean to signify that I have been pressed
         pressed = true;
         //assign screen coordinates for start of drag
@@ -65,7 +65,7 @@ public class Unit : MonoBehaviour
     }
 
     //called when a drag is started
-    public static void begin_drag() {
+    public void begin_drag() {
         //if card is on board (swapping lanes)
         if (in_play) {
 
@@ -80,7 +80,7 @@ public class Unit : MonoBehaviour
     }
 
     //called each frame when dragging
-    public static void drag() {
+    public void drag() {
         //ADD IN PLAY / NOT IN PLAY CONDITIONALS
 
         //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
@@ -105,7 +105,7 @@ public class Unit : MonoBehaviour
     }
 
     //called when a drag is finished
-    public static void end_drag() {
+    public void end_drag() {
         //if in play (swapping)
         if (in_play) {
             transform.position = board.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
@@ -148,7 +148,7 @@ public class Unit : MonoBehaviour
     }
 
     //called when the left mouse is depressed over unit's collider
-    public static void mouse_up() {
+    public void mouse_up() {
         //if dragging
         if (is_dragging) {
             end_drag();
