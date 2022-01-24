@@ -23,6 +23,8 @@ public class Board : MonoBehaviour
 
     public bool turn = true;
 
+    public bool[][] valid_locations;
+
     //this is here for now though i may move it
     public Vector3 mouse_position = new Vector3(0f, 0f, 0f);
 
@@ -38,6 +40,7 @@ public class Board : MonoBehaviour
     void Update()
     {
         //this is here for now though i may move it
+        //convert screen mouse position to world mouse position
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
