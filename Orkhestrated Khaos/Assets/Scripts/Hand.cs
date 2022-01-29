@@ -9,6 +9,7 @@ public class Hand : MonoBehaviour
     public float spacing;
     public int to_insert;
     public BoxCollider2D box_collider;
+    public Player player;
 
     // Start is called before the first frame update
     void Start()
@@ -60,5 +61,13 @@ public class Hand : MonoBehaviour
             }
             units[i].transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, 0, 0);
         }
+    }
+
+    public void draw_card()
+    {
+        int index = UnityEngine.Random.Range(0, player.deck.Count);
+        GameObject card = new GameObject();
+        //units.Add();
+        player.deck.RemoveAt(index);
     }
 }

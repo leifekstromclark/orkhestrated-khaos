@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Board : MonoBehaviour
+public class Game : MonoBehaviour
 {
     public Unit[][] board = new Unit[3][] {
         new Unit[7],

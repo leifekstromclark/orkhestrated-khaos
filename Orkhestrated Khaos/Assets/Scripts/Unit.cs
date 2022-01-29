@@ -5,7 +5,7 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
 
-    public Board board;
+    public Game game;
     public int power;
     public int health;
     public int speed;
@@ -38,11 +38,11 @@ public class Unit : MonoBehaviour
     void Update()
     {
         //if left mouse is down and over my collider
-        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(board.mouse_position)) {
+        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(game.mouse_position)) {
             mouse_down();
         }
         // if left mouse is up and over my collider
-        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(board.mouse_position)) {
+        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(game.mouse_position)) {
             mouse_up();
         }
         //if drag is triggered
@@ -73,7 +73,7 @@ public class Unit : MonoBehaviour
         //if card is in hand (playing card)
         else {
             //get some valid placement locations for the board
-            board.valid_locations = get_placement_locations();
+            game.valid_locations = get_placement_locations();
             //remove card from hand list
             hand.units.Remove(this);
         }
@@ -85,57 +85,57 @@ public class Unit : MonoBehaviour
 
         //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
         //returns true if one is needed. otherwise false (to_insert got set to -1)
-        bool inserting = hand.set_to_insert(board.mouse_position);
+        bool inserting = hand.set_to_insert(game.mouse_position);
 
         //if not moused over hand (essentially)
         if (!inserting) {
             //if moused over board
-            if (board.poly_collider.OverlapPoint(board.mouse_position)) {
+            if (game.poly_collider.OverlapPoint(game.mouse_position)) {
                 //get the space that is moused over
-                int[] board_pos = board.mouse_to_board_pos(board.mouse_position);
+                int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
                 //if the space is a valid space to place in
-                if (board.valid_locations[board_pos[0]][board_pos[1]]) {
+                if (game.valid_locations[board_pos[0]][board_pos[1]]) {
                     //MAKE THINGS LIGHT UP AND SHIT
                 }
             }
         }
 
         //set transform to follow the mouse
-        transform.position = board.mouse_position + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+        transform.position = game.mouse_position + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
     }
 
     //called when a drag is finished
     public void end_drag() {
         //if in play (swapping)
         if (in_play) {
-            transform.position = board.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+            transform.position = game.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
         }
         //if not in play (playing from hand)
         else {
             bool placed = false;
             //if moused over hand
-            if (hand.box_collider.OverlapPoint(board.mouse_position)) {
+            if (hand.box_collider.OverlapPoint(game.mouse_position)) {
                 //insert card into hand
                 hand.units.Insert(hand.to_insert, this);
                 placed = true;
             }
             //if moused over board
-            else if (board.poly_collider.OverlapPoint(board.mouse_position)) {
+            else if (game.poly_collider.OverlapPoint(game.mouse_position)) {
                 //get the space that is moused over
-                int[] board_pos = board.mouse_to_board_pos(board.mouse_position);
+                int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
                 //if the space is a valid space to place in
-                if (board.valid_locations[board_pos[0]][board_pos[1]]) {
+                if (game.valid_locations[board_pos[0]][board_pos[1]]) {
                     
                     //PRLLY CALL PLACE FUNCTION FROM HERE
 
                     //insert card into board
-                    board.board[board_pos[0]][board_pos[1]] = this;
+                    game.board[board_pos[0]][board_pos[1]] = this;
                     //keep track of location on board
                     board_loc = board_pos;
                     //card is now in play
                     in_play = true;
                     //move card to corresponding position
-                    transform.position = board.board_positions[board_pos[0]][board_pos[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+                    transform.position = game.board_positions[board_pos[0]][board_pos[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
                     placed = true;
                 }
             }
@@ -186,7 +186,7 @@ public class Unit : MonoBehaviour
         }
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
-            if (!board.board[row][col] is object) {
+            if (!game.board[row][col] is object) {
                 placement_locations[row][col] = true;
             }
         }
