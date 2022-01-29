@@ -1,8 +1,10 @@
-﻿{
+{
     "files.exclude":
     {
         "**/.DS_Store":true,
         "**/.git":true,
+        "**/.git/objects/**": true,
+        "**/node_modules/**": true,
         "**/.gitignore":true,
         "**/.gitmodules":true,
         "**/*.booproj":true,

@@ -17,7 +17,8 @@ public class Unit : MonoBehaviour
     public bool allegiance;
     public Unit embarked;
 
-    public BoxCollider2D box_collider;
+    public BoxCollider2D box_collider = new BoxCollider2D();
+    
     private bool pressed;
     private Vector3 drag_start;
     private bool is_dragging;
@@ -27,7 +28,7 @@ public class Unit : MonoBehaviour
     public int[] board_loc;
     public Hand hand;
 
-    // Start is called before the first frame update
+    // Start is called before the first frame update    
     void Start()
     {
         box_collider = GetComponent<BoxCollider2D>();
@@ -36,7 +37,8 @@ public class Unit : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
+
         //if left mouse is down and over my collider
         if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(game.mouse_position)) {
             mouse_down();
