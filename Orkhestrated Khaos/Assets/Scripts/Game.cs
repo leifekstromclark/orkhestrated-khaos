@@ -92,7 +92,7 @@ public class Game : MonoBehaviour
             Array.Reverse(row);
         }
     }
-
+    /*
     public void combat()
     {
         if (turn) {
@@ -180,4 +180,5 @@ public class Game : MonoBehaviour
             reverse_board();
         }
     }
+    */
 }

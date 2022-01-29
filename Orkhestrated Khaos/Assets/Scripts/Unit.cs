@@ -15,7 +15,6 @@ public class Unit : MonoBehaviour
     public int upkeep;
     public int loyalty;
     public bool allegiance;
-    public Unit embarked;
 
     public BoxCollider2D box_collider;
     private bool pressed;

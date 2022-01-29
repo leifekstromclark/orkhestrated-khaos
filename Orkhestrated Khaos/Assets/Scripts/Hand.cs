@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Hand : MonoBehaviour
 {
+    public Game game;
     public List<Unit> units = new List<Unit>();
     public float spacing;
     public int to_insert;
@@ -14,7 +15,13 @@ public class Hand : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //TESTING
         box_collider = GetComponent<BoxCollider2D>();
+        GameObject card = Instantiate(Resources.Load("Ork")) as GameObject;
+        Unit unit = card.GetComponent<Unit>();
+        unit.game = game;
+        unit.hand = this;
+        units.Add(unit);
     }
 
     // Update is called once per frame
@@ -59,15 +66,16 @@ public class Hand : MonoBehaviour
             if (i == to_insert) {
                 skip = 1;
             }
-            units[i].transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, 0, 0);
+            units[i].gameObject.transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, 0, 0);
         }
     }
 
     public void draw_card()
     {
         int index = UnityEngine.Random.Range(0, player.deck.Count);
-        GameObject card = new GameObject();
-        //units.Add();
+        GameObject card = Instantiate(Resources.Load(player.deck_list[index].creature)) as GameObject;
+        Unit unit = GetComponent<Unit>();
+        units.Add(unit);
         player.deck.RemoveAt(index);
     }
 }
