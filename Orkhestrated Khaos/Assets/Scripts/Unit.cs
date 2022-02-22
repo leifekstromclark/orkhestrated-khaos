@@ -5,6 +5,8 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
 
+    private TextMesh health_counter;
+    private TextMesh power_counter;
     public Game game;
     public int power;
     public int health;
@@ -31,27 +33,36 @@ public class Unit : MonoBehaviour
     {
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
+        if (!allegiance) {
+            transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+
+        health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<TextMesh>();
+        power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<TextMesh>();
+        health_counter.text = health.ToString();
+        power_counter.text = power.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if left mouse is down and over my collider
-        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(game.mouse_position)) {
-            mouse_down();
-        }
-        // if left mouse is up and over my collider
-        if (Input.GetMouseButtonUp(0) && box_collider.OverlapPoint(game.mouse_position)) {
-            mouse_up();
+
+        //if dragging
+        if (is_dragging) {
+            drag();
         }
         //if drag is triggered
         if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
             is_dragging = true;
             begin_drag();
         }
-        //if dragging
-        if (is_dragging) {
-            drag();
+        //if left mouse is down and over my collider
+        if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(game.mouse_position)) {
+            mouse_down();
+        }
+        // if left mouse is up and over my collider
+        if (Input.GetMouseButtonUp(0) && (box_collider.OverlapPoint(game.mouse_position) || is_dragging)) {
+            mouse_up();
         }
     }
 
@@ -107,6 +118,7 @@ public class Unit : MonoBehaviour
     public void end_drag() {
         //if in play (swapping)
         if (in_play) {
+            //CALL SWAP FUNCTION HERE
             transform.position = game.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
         }
         //if not in play (playing from hand)
@@ -124,17 +136,7 @@ public class Unit : MonoBehaviour
                 int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
                 //if the space is a valid space to place in
                 if (game.valid_locations[board_pos[0]][board_pos[1]]) {
-                    
-                    //PRLLY CALL PLACE FUNCTION FROM HERE
-
-                    //insert card into board
-                    game.board[board_pos[0]][board_pos[1]] = this;
-                    //keep track of location on board
-                    board_loc = board_pos;
-                    //card is now in play
-                    in_play = true;
-                    //move card to corresponding position
-                    transform.position = game.board_positions[board_pos[0]][board_pos[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+                    place(board_pos);
                     placed = true;
                 }
             }
@@ -192,10 +194,23 @@ public class Unit : MonoBehaviour
         return placement_locations;
     }
 
-    /*
     public void place(int[] position) {
-
+        //insert card into board
+        game.board[position[0]][position[1]] = this;
+        //keep track of location on board
+        board_loc = position;
+        //card is now in play
+        in_play = true;
+        //set card to corresponding scale
+        transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
+        if (!allegiance) {
+            transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+        //move card to corresponding position
+        transform.position = game.board_positions[position[0]][position[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
     }
+
+    /*
 
     public bool[][] get_swap_locations() {
         
@@ -205,4 +220,14 @@ public class Unit : MonoBehaviour
 
     }
     */
+
+    public void set_health(int val) {
+        health = val;
+        health_counter.text = val.ToString();
+    }
+
+    public void set_power(int val) {
+        power = val;
+        power_counter.text = val.ToString();
+    }
 }

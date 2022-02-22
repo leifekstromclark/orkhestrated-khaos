@@ -17,6 +17,8 @@ public class Game : MonoBehaviour
         new Vector3[7]
     };
 
+    public float[] row_scales = new float[3];
+
     public Player[] players = new Player[2];
 
     public PolygonCollider2D poly_collider;
@@ -33,6 +35,7 @@ public class Game : MonoBehaviour
     {
         poly_collider = GetComponent<PolygonCollider2D>();
         set_board_positions();
+        set_row_scales();
     }
 
     // Update is called once per frame
@@ -45,6 +48,7 @@ public class Game : MonoBehaviour
 
     //function to set corresponding transform positions for each board space
     public void set_board_positions() {
+
         for (int row = 0; row < 3; row++) {
             float y;
             if (row == 0) {
@@ -56,12 +60,32 @@ public class Game : MonoBehaviour
             else {
                 y = -1.505f + (-0.265f + 1.505f) / 8f;
             }
+
+            float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
             
             for (int col = 0; col < 7; col++) {
-                float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
                 float x = width / 7f * (col - 3);
                 board_positions[row][col] = transform.position + new Vector3(x * transform.lossyScale.x, y * transform.lossyScale.y, 0f);
             }
+        }
+    }
+
+    //function to set corresponding scales for units in each row
+    public void set_row_scales() {
+        float bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 8f + 1.505f) / 3.01f;
+        for (int row = 0; row < 3; row++) {
+            float y;
+            if (row == 0) {
+                y = 0.755f + (1.505f - 0.755f) / 8f;
+            }
+            else if (row == 1) {
+                y = -0.265f + (0.755f + 0.265f) / 8f;
+            }
+            else {
+                y = -1.505f + (-0.265f + 1.505f) / 8f;
+            }
+            float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
+            row_scales[row] = width / bot_width;
         }
     }
 

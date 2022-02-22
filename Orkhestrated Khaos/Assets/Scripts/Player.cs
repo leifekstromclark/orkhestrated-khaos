@@ -21,7 +21,11 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        //TESTING
+        for(int i=0; i < 10; i++) {
+            deck_list.Add(new DeckListEntry("Ork", ""));
+            deck.Add(i);
+        }
     }
 
     // Update is called once per frame

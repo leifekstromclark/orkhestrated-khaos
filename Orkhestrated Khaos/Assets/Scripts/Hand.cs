@@ -15,19 +15,17 @@ public class Hand : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //TESTING
         box_collider = GetComponent<BoxCollider2D>();
-        GameObject card = Instantiate(Resources.Load("Ork")) as GameObject;
-        Unit unit = card.GetComponent<Unit>();
-        unit.game = game;
-        unit.hand = this;
-        units.Add(unit);
+
+        //TESTING
+        draw_card();
+        draw_card();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //probably change hand to only rearrange at certain points
+        //PROBABLY SHOULD CHANGE HAND TO ONLY REARRANGE AT CERTAIN POINTS
         arrange();
     }
 
@@ -72,9 +70,11 @@ public class Hand : MonoBehaviour
 
     public void draw_card()
     {
-        int index = UnityEngine.Random.Range(0, player.deck.Count);
+        int index = player.deck[UnityEngine.Random.Range(0, player.deck.Count)];
         GameObject card = Instantiate(Resources.Load(player.deck_list[index].creature)) as GameObject;
-        Unit unit = GetComponent<Unit>();
+        Unit unit = card.GetComponent<Unit>();
+        unit.game = game;
+        unit.hand = this;
         units.Add(unit);
         player.deck.RemoveAt(index);
     }
