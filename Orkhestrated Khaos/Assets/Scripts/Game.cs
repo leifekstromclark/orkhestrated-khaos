@@ -126,17 +126,17 @@ public class Game : MonoBehaviour
         foreach (Unit[] row in board) {
             for (int i=1; i < row.Length; i++) {
                 Unit unit = row[i];
-                if (unit is object && unit.allegiance == turn) {
+                if (unit && unit.allegiance == turn) {
                     Unit target_unit = null;
                     Player target_player = null;
                     Unit attacker;
                     int moves = unit.speed;
                     int attacks = unit.attacks;
                     int embarked_attacks = 0;
-                    if (unit is Vehicle && unit.embarked is object) {
+                    if (unit is Vehicle && unit.embarked) {
                         embarked_attacks = unit.embarked.attacks;
                     }
-                    while (moves > 0 || target_unit is object || target_player is object) {
+                    while (moves > 0 || target_unit || target_player) {
 
                         target_unit = null;
                         target_player = null;
@@ -153,9 +153,9 @@ public class Game : MonoBehaviour
                         }
 
                         // If attacking then get a target
-                        if (attacker is object) {
+                        if (attacker) {
                             for (int r=1; r <= attacker.range; r++) {
-                                if (row[i-r] is object) {
+                                if (row[i-r]) {
                                     target_unit = row[i-r];
                                     break;
                                 }
@@ -167,7 +167,7 @@ public class Game : MonoBehaviour
                         }
 
                         // If found target unit then attack
-                        if (target_unit is object) {
+                        if (target_unit) {
                             // Insert code for attacking
                             if (attacker == unit) {
                                 attacks -= 1;
@@ -178,7 +178,7 @@ public class Game : MonoBehaviour
                         }
 
                         // If found target player then attack
-                        if (target_player is object) {
+                        if (target_player) {
                             // Insert code for attacking
                             if (attacker == unit) {
                                 attacks -= 1;

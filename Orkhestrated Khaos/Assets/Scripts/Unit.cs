@@ -187,7 +187,7 @@ public class Unit : MonoBehaviour
         }
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
-            if (!game.board[row][col] is object) {
+            if (!game.board[row][col]) {
                 placement_locations[row][col] = true;
             }
         }
