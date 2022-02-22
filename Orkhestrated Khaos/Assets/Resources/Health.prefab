@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5809509837037850795}
   - component: {fileID: 4709686401713209776}
   - component: {fileID: 606437924521367734}
+  - component: {fileID: -1872868606761251263}
   m_Layer: 0
   m_Name: Health
   m_TagString: Untagged
@@ -95,3 +96,16 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4279303936
+--- !u!114 &-1872868606761251263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3289415835861481507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e022e3c4eb6df614b9853fa7f4bca87c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text_mesh: {fileID: 0}

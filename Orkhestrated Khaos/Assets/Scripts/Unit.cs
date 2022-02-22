@@ -5,8 +5,8 @@ using UnityEngine;
 public class Unit : MonoBehaviour
 {
 
-    private TextMesh health_counter;
-    private TextMesh power_counter;
+    private Counter health_counter;
+    private Counter power_counter;
     public Game game;
     public int power;
     public int health;
@@ -33,14 +33,17 @@ public class Unit : MonoBehaviour
     {
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
-        if (!allegiance) {
-            transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        }
+        health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
+        power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
+        health_counter.pre_init();
+        power_counter.pre_init();
+        health_counter.set_value(health);
+        power_counter.set_value(power);
+        //RESTRUCTURE THE COUNTER SYSTEM SO THAT COUNTERS DONTT GET SMALLER
 
-        health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<TextMesh>();
-        power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<TextMesh>();
-        health_counter.text = health.ToString();
-        power_counter.text = power.ToString();
+        if (!allegiance) {
+            flip();
+        }
     }
 
     // Update is called once per frame
@@ -204,7 +207,7 @@ public class Unit : MonoBehaviour
         //set card to corresponding scale
         transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
         if (!allegiance) {
-            transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            flip();
         }
         //move card to corresponding position
         transform.position = game.board_positions[position[0]][position[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
@@ -223,11 +226,17 @@ public class Unit : MonoBehaviour
 
     public void set_health(int val) {
         health = val;
-        health_counter.text = val.ToString();
+        health_counter.set_value(val);
     }
 
     public void set_power(int val) {
         power = val;
-        power_counter.text = val.ToString();
+        power_counter.set_value(val);
+    }
+
+    public void flip() {
+        health_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        power_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
     }
 }
