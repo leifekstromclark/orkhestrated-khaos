@@ -50,7 +50,6 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //if dragging
         if (is_dragging) {
             drag();
@@ -82,12 +81,12 @@ public class Unit : MonoBehaviour
     public void begin_drag() {
         //if card is on board (swapping lanes)
         if (in_play) {
-
+            
         }
         //if card is in hand (playing card)
         else {
             //get some valid placement locations for the board
-            game.valid_locations = get_placement_locations();
+            game.set_valid_locations(get_placement_locations());
             //remove card from hand list
             hand.units.Remove(this);
         }
@@ -108,7 +107,7 @@ public class Unit : MonoBehaviour
                 //get the space that is moused over
                 int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
                 //if the space is a valid space to place in
-                if (game.valid_locations[board_pos[0]][board_pos[1]]) {
+                if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
                     //MAKE THINGS LIGHT UP AND SHIT
                 }
             }
@@ -139,7 +138,7 @@ public class Unit : MonoBehaviour
                 //get the space that is moused over
                 int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
                 //if the space is a valid space to place in
-                if (game.valid_locations[board_pos[0]][board_pos[1]]) {
+                if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
                     place(board_pos);
                     placed = true;
                 }
@@ -150,6 +149,8 @@ public class Unit : MonoBehaviour
                 hand.units.Add(this);
             }
         }
+        //clear valid locations
+        game.set_valid_locations(null);
     }
 
     //called when the left mouse is depressed over unit's collider
@@ -174,12 +175,12 @@ public class Unit : MonoBehaviour
     }
     
     //gets valid placement (playing out of hand) locations on the board
-    public bool[][] get_placement_locations() {
+    public string[][] get_placement_locations() {
         //instantiate board-sized array of "false"
-        bool[][] placement_locations = new bool[3][] {
-            new bool[7],
-            new bool[7],
-            new bool[7]
+        string[][] valid_locations = new string[3][] {
+            new string[7],
+            new string[7],
+            new string[7]
         };
         //set placement column based on allegiance
         int col;
@@ -192,10 +193,10 @@ public class Unit : MonoBehaviour
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
             if (!game.board[row][col]) {
-                placement_locations[row][col] = true;
+                valid_locations[row][col] = "Place";
             }
         }
-        return placement_locations;
+        return valid_locations;
     }
 
     public void place(int[] position) {
@@ -208,7 +209,7 @@ public class Unit : MonoBehaviour
         //set card to corresponding scale
         avatar.transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
         if (!allegiance) {
-            flip();
+            avatar.transform.localScale = new Vector3(-1 * avatar.transform.localScale.x, avatar.transform.localScale.y, 1f);
         }
         //move card to corresponding position
         transform.position = game.board_positions[position[0]][position[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
@@ -216,7 +217,7 @@ public class Unit : MonoBehaviour
 
     /*
 
-    public bool[][] get_swap_locations() {
+    public string[][] get_swap_locations() {
         
     }
 
@@ -236,8 +237,8 @@ public class Unit : MonoBehaviour
     }
 
     public void flip() {
-        health_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        power_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        health_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
+        power_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
+        transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
     }
 }

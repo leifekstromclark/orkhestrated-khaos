@@ -11,13 +11,29 @@ public class Game : MonoBehaviour
         new Unit[7]
     };
 
-    public Vector3[][] board_positions =  new Vector3[3][] {
+    public Vector3[][] board_positions = new Vector3[3][] {
         new Vector3[7],
         new Vector3[7],
         new Vector3[7]
     };
 
+    public GameObject[][] board_highlights = new GameObject[3][] {
+        new GameObject[7],
+        new GameObject[7],
+        new GameObject[7]
+    };
+
+    public List<Icon> board_icons = new List<Icon>();
+
     public float[] row_scales = new float[3];
+
+    public Vector3[][] icon_positions = new Vector3[3][] {
+        new Vector3[7],
+        new Vector3[7],
+        new Vector3[7]
+    };
+
+    public float[] icon_scales = new float[3];
 
     public Player[] players = new Player[2];
 
@@ -25,7 +41,7 @@ public class Game : MonoBehaviour
 
     public bool turn = true;
 
-    public bool[][] valid_locations;
+    public string[][] valid_locations;
 
     //THIS IS HERE FOR NOW THOUGH I MAY MOVE IT
     public Vector3 mouse_position = new Vector3(0f, 0f, 0f);
@@ -34,8 +50,7 @@ public class Game : MonoBehaviour
     void Start()
     {
         poly_collider = GetComponent<PolygonCollider2D>();
-        set_board_positions();
-        set_row_scales();
+        set_positions();
     }
 
     // Update is called once per frame
@@ -46,48 +61,51 @@ public class Game : MonoBehaviour
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
 
-    //function to set corresponding transform positions for each board space
-    public void set_board_positions() {
+    //precompute various board related data
+    public void set_positions() {
+
+        //NOTES: CHANGE THIS PROCESS TO BE DERIVED COMPLETELY FROM THE BOX COLLIDER
+        //MAKE IT COMPLETELY MATHEMATICAL (NO MORE EYEBALLED Y VALUES) (NO MORE DIVIDING BY 8 CALCULATE EVERYTHING FROM PERSPECTIVE)
+        //REMEMBER THAT ICONS ARE CURRENTLY INSTANTIATED (NOT PRELOADED) (THIS IS GOOD IF CHOICE BAD IF NO CHOICE)
+        //GIVE THE BOARD LESS PERSPECTIVE (MORE BIRDSEYE)
+
+        float unit_bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 8f + 1.505f) / 3.01f;
+        float icon_bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 2f + 1.505f) / 3.01f;
 
         for (int row = 0; row < 3; row++) {
-            float y;
+            float unit_y;
+            float icon_y;
             if (row == 0) {
-                y = 0.755f + (1.505f - 0.755f) / 8f;
+                unit_y = 0.755f + (1.505f - 0.755f) / 8f;
+                icon_y = 0.755f + (1.505f - 0.755f) / 2f;
             }
             else if (row == 1) {
-                y = -0.265f + (0.755f + 0.265f) / 8f;
+                unit_y = -0.265f + (0.755f + 0.265f) / 8f;
+                icon_y = -0.265f + (0.755f + 0.265f) / 2f;
+                
             }
             else {
-                y = -1.505f + (-0.265f + 1.505f) / 8f;
+                unit_y = -1.505f + (-0.265f + 1.505f) / 8f;
+                icon_y = -1.505f + (-0.265f + 1.505f) / 2f;
             }
 
-            float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
+            float unit_width = 7.936f - (7.936f - 5.3f) * (unit_y + 1.505f) / 3.01f;
+            float icon_width = 7.936f - (7.936f - 5.3f) * (icon_y + 1.505f) / 3.01f;
+
+            row_scales[row] = unit_width / unit_bot_width;
+            icon_scales[row] = icon_width / icon_bot_width;
             
             for (int col = 0; col < 7; col++) {
-                float x = width / 7f * (col - 3);
-                board_positions[row][col] = transform.position + new Vector3(x * transform.lossyScale.x, y * transform.lossyScale.y, 0f);
+                float unit_x = unit_width / 7f * (col - 3);
+                float icon_x = icon_width / 7f * (col - 3);
+                board_positions[row][col] = transform.position + new Vector3(unit_x * transform.lossyScale.x, unit_y * transform.lossyScale.y, 0f);
+                icon_positions[row][col] = transform.position + new Vector3(icon_x * transform.lossyScale.x, icon_y * transform.lossyScale.y, 0f);
+                board_highlights[row][col] = transform.GetChild(row * 7 + col).gameObject;
             }
         }
     }
 
-    //function to set corresponding scales for units in each row
-    public void set_row_scales() {
-        float bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 8f + 1.505f) / 3.01f;
-        for (int row = 0; row < 3; row++) {
-            float y;
-            if (row == 0) {
-                y = 0.755f + (1.505f - 0.755f) / 8f;
-            }
-            else if (row == 1) {
-                y = -0.265f + (0.755f + 0.265f) / 8f;
-            }
-            else {
-                y = -1.505f + (-0.265f + 1.505f) / 8f;
-            }
-            float width = 7.936f - (7.936f - 5.3f) * (y + 1.505f) / 3.01f;
-            row_scales[row] = width / bot_width;
-        }
-    }
+    
 
     //takes a position of the mouse in the world. returns a corresponding space on the board
     public int[] mouse_to_board_pos(Vector3 mouse_position) {
@@ -108,6 +126,39 @@ public class Game : MonoBehaviour
         float x_pos = (mouse_position.x - transform.position.x) / transform.lossyScale.x + width / 2f;
         board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
         return board_pos;
+    }
+
+    public void set_valid_locations(string[][] locations) {
+        foreach (Icon icon in board_icons) {
+            Destroy(icon.gameObject);
+        }
+        board_icons.Clear();
+
+        valid_locations = locations;
+        if (valid_locations == null) {
+            foreach (GameObject[] row in board_highlights) {
+                foreach (GameObject highlight in row) {
+                    highlight.SetActive(false);
+                }
+            }
+        }
+        else {
+            for (int row = 0; row < 3; row++) {
+                for (int col = 0; col < 7; col++) {
+                    if (valid_locations[row][col] != null) {
+                        board_highlights[row][col].SetActive(true);
+                        Icon icon = (Instantiate(Resources.Load("Icon"), icon_positions[row][col], Quaternion.identity) as GameObject).GetComponent<Icon>();
+                        icon.gameObject.transform.localScale = new Vector3(icon_scales[row], icon_scales[row], 1f);
+                        icon.pre_init();
+                        icon.set_icon(valid_locations[row][col]);
+                        board_icons.Add(icon);
+                    }
+                    else {
+                        board_highlights[row][col].SetActive(false);
+                    }
+                }
+            }
+        }
     }
 
     public void reverse_board()

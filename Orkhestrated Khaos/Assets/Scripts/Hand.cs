@@ -72,8 +72,7 @@ public class Hand : MonoBehaviour
     {
         int rand = UnityEngine.Random.Range(0, player.deck.Count);
         int index = player.deck[rand];
-        GameObject card = Instantiate(Resources.Load(player.deck_list[index].creature)) as GameObject;
-        Unit unit = card.GetComponent<Unit>();
+        Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
         unit.game = game;
         unit.hand = this;
         units.Add(unit);

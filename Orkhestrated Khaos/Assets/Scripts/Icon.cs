@@ -2,15 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Counter : MonoBehaviour
+public class Icon : MonoBehaviour
 {
 
-    private TextMesh text_mesh;
+    private SpriteRenderer sprite_renderer;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -21,10 +21,10 @@ public class Counter : MonoBehaviour
 
     //TEMPORARY SLOPPY SOLUTION WE SHOULD FIND A BETTER ONE LATER
     public void pre_init() {
-        text_mesh = GetComponent<TextMesh>();
+        sprite_renderer = GetComponent<SpriteRenderer>();
     }
 
-    public void set_value(int val) {
-        text_mesh.text = val.ToString();
+    public void set_icon(string type) {
+        sprite_renderer.sprite = Resources.Load<Sprite>("BoardIcons/" + type);
     }
 }
