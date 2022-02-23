@@ -70,12 +70,13 @@ public class Hand : MonoBehaviour
 
     public void draw_card()
     {
-        int index = player.deck[UnityEngine.Random.Range(0, player.deck.Count)];
+        int rand = UnityEngine.Random.Range(0, player.deck.Count);
+        int index = player.deck[rand];
         GameObject card = Instantiate(Resources.Load(player.deck_list[index].creature)) as GameObject;
         Unit unit = card.GetComponent<Unit>();
         unit.game = game;
         unit.hand = this;
         units.Add(unit);
-        player.deck.RemoveAt(index);
+        player.deck.RemoveAt(rand);
     }
 }

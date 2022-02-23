@@ -6,7 +6,13 @@ public class Player : MonoBehaviour
 {
 
     public List<int> deck = new List<int>();
-    public List<DeckListEntry> deck_list = new List<DeckListEntry>();
+    public List<DeckListEntry> deck_list = new List<DeckListEntry>() {
+        new DeckListEntry("Ork", ""),
+        new DeckListEntry("Ork", ""),
+        new DeckListEntry("Ork", ""),
+        new DeckListEntry("Ork", ""),
+        new DeckListEntry("Ork", "")
+    };
     
     /* RANDOM CODE I WANTED TO HANG ON TO
     var blockLookup = new Dictionary<string, Func<IBlock>>();
@@ -21,11 +27,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //TESTING
-        for(int i=0; i < 10; i++) {
-            deck_list.Add(new DeckListEntry("Ork", ""));
-            deck.Add(i);
-        }
+
     }
 
     // Update is called once per frame

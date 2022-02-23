@@ -639,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1141a3ec923c25741a5d7b9691f18e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deck: 
+  deck: 0000000001000000020000000300000004000000
 --- !u!1 &2047478350
 GameObject:
   m_ObjectHideFlags: 0

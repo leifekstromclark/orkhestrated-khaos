@@ -7,6 +7,7 @@ public class Unit : MonoBehaviour
 
     private Counter health_counter;
     private Counter power_counter;
+    private GameObject avatar;
     public Game game;
     public int power;
     public int health;
@@ -33,13 +34,13 @@ public class Unit : MonoBehaviour
     {
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
+        avatar = transform.GetChild(0).gameObject;
         health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
         power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
         health_counter.pre_init();
         power_counter.pre_init();
         health_counter.set_value(health);
         power_counter.set_value(power);
-        //RESTRUCTURE THE COUNTER SYSTEM SO THAT COUNTERS DONTT GET SMALLER
 
         if (!allegiance) {
             flip();
@@ -205,7 +206,7 @@ public class Unit : MonoBehaviour
         //card is now in play
         in_play = true;
         //set card to corresponding scale
-        transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
+        avatar.transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
         if (!allegiance) {
             flip();
         }
