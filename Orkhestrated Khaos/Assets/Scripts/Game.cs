@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+
+    //THIS CLASS WILL PROBABLY GET SPLIT INTO MULTIPLE IN THE FUTURE
+
+    private float projection_height = 3.01f;
+    private float base_width = 7.936f;
+    private float top_width = 6.806f;
+
+    private float[] row_bounds = new float[2];
+
     public Unit[][] board = new Unit[3][] {
         new Unit[7],
         new Unit[7],
@@ -60,46 +69,41 @@ public class Game : MonoBehaviour
         //convert screen mouse position to world mouse position
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
+    
+    private float get_y(float relative_height){
+        return projection_height * relative_height / (1 - (base_width / top_width - 1) * (1 - relative_height));
+    }
+
+    private float get_width(float y) {
+        return base_width - (base_width - top_width) * y / projection_height;
+    }
 
     //precompute various board related data
     public void set_positions() {
 
-        //NOTES: CHANGE THIS PROCESS TO BE DERIVED COMPLETELY FROM THE BOX COLLIDER
-        //MAKE IT COMPLETELY MATHEMATICAL (NO MORE EYEBALLED Y VALUES) (NO MORE DIVIDING BY 8 CALCULATE EVERYTHING FROM PERSPECTIVE)
-        //REMEMBER THAT ICONS ARE CURRENTLY INSTANTIATED (NOT PRELOADED) (THIS IS GOOD IF CHOICE BAD IF NO CHOICE)
-        //GIVE THE BOARD LESS PERSPECTIVE (MORE BIRDSEYE)
-
-        float unit_bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 8f + 1.505f) / 3.01f;
-        float icon_bot_width = 7.936f - (7.936f - 5.3f) * (-1.505f + (-0.265f + 1.505f) / 2f + 1.505f) / 3.01f;
+        float unit_bot_width = get_width(get_y(1f/18f));
+        float icon_bot_width = get_width(get_y(1f/6f));
+        row_bounds[0] = get_y(1f/3f);
+        row_bounds[1] = get_y(2f/3f);
 
         for (int row = 0; row < 3; row++) {
-            float unit_y;
-            float icon_y;
-            if (row == 0) {
-                unit_y = 0.755f + (1.505f - 0.755f) / 8f;
-                icon_y = 0.755f + (1.505f - 0.755f) / 2f;
-            }
-            else if (row == 1) {
-                unit_y = -0.265f + (0.755f + 0.265f) / 8f;
-                icon_y = -0.265f + (0.755f + 0.265f) / 2f;
-                
-            }
-            else {
-                unit_y = -1.505f + (-0.265f + 1.505f) / 8f;
-                icon_y = -1.505f + (-0.265f + 1.505f) / 2f;
-            }
+            float unit_y = get_y((2 - row) * 1f/3f + 1f/18f);
+            float icon_y = get_y((2 - row) * 1f/3f + 1f/6f);
 
-            float unit_width = 7.936f - (7.936f - 5.3f) * (unit_y + 1.505f) / 3.01f;
-            float icon_width = 7.936f - (7.936f - 5.3f) * (icon_y + 1.505f) / 3.01f;
+            float unit_width = get_width(unit_y);
+            float icon_width = get_width(icon_y);
 
             row_scales[row] = unit_width / unit_bot_width;
             icon_scales[row] = icon_width / icon_bot_width;
+
+            unit_y -= projection_height / 2f;
+            icon_y -= projection_height / 2f;
             
             for (int col = 0; col < 7; col++) {
                 float unit_x = unit_width / 7f * (col - 3);
                 float icon_x = icon_width / 7f * (col - 3);
-                board_positions[row][col] = transform.position + new Vector3(unit_x * transform.lossyScale.x, unit_y * transform.lossyScale.y, 0f);
-                icon_positions[row][col] = transform.position + new Vector3(icon_x * transform.lossyScale.x, icon_y * transform.lossyScale.y, 0f);
+                board_positions[row][col] = transform.position + new Vector3(transform.position.x + unit_x * transform.lossyScale.x, transform.position.y + unit_y * transform.lossyScale.y, 0);
+                icon_positions[row][col] = transform.position + new Vector3(transform.position.x + icon_x * transform.lossyScale.x, transform.position.y + icon_y * transform.lossyScale.y, 0);
                 board_highlights[row][col] = transform.GetChild(row * 7 + col).gameObject;
             }
         }
@@ -111,13 +115,12 @@ public class Game : MonoBehaviour
     public int[] mouse_to_board_pos(Vector3 mouse_position) {
         //WATCH OUT FOR 7 COL INDICES THIS IS NOT ACCOUNTED FOR AND COULD BE A PROBLEM (I DONT THINK IT IS RN THO)
         int[] board_pos = new int[2];
-        float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y;
-        float width = 7.936f - (7.936f - 5.3f) * (y_pos + 1.505f) / 3.01f;
-        //NOTE y: -1.505, -0.265, 0.755, 1.505 x: 3.968 - 2.65 (edge / polygon collider is useful to measure)
-        if (y_pos < -0.265f) {
+        float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y + projection_height / 2f;
+        float width = get_width(y_pos);
+        if (y_pos < row_bounds[0]) {
             board_pos[0] = 2;
         }
-        else if (y_pos < 0.755f) {
+        else if (y_pos < row_bounds[1]) {
             board_pos[0] = 1;
         }
         else {

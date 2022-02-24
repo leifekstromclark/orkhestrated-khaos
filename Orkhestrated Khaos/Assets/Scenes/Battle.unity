@@ -1307,7 +1307,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8c83d265e11c1a4b869707223c67054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  board_icons: []
   row_scales:
+  - 0
+  - 0
+  - 0
+  icon_scales:
   - 0
   - 0
   - 0
@@ -1342,8 +1347,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -2.65, y: 1.505}
-      - {x: 2.65, y: 1.505}
+    - - {x: -3.403, y: 1.505}
+      - {x: 3.403, y: 1.505}
       - {x: 3.968, y: -1.505}
       - {x: -3.968, y: -1.505}
 --- !u!1 &1407059761
