@@ -32,17 +32,13 @@ public class Game : MonoBehaviour
         new GameObject[7]
     };
 
-    public List<Icon> board_icons = new List<Icon>();
-
-    public float[] row_scales = new float[3];
-
-    public Vector3[][] icon_positions = new Vector3[3][] {
-        new Vector3[7],
-        new Vector3[7],
-        new Vector3[7]
+    public Icon[][][] board_icons = new Icon[3][][] {
+        new Icon[7][],
+        new Icon[7][],
+        new Icon[7][]
     };
 
-    public float[] icon_scales = new float[3];
+    public float[] row_scales = new float[3];
 
     public Player[] players = new Player[2];
 
@@ -50,7 +46,7 @@ public class Game : MonoBehaviour
 
     public bool turn = true;
 
-    public string[][] valid_locations;
+    public string[][][] valid_locations;
 
     //THIS IS HERE FOR NOW THOUGH I MAY MOVE IT
     public Vector3 mouse_position = new Vector3(0f, 0f, 0f);
@@ -59,7 +55,7 @@ public class Game : MonoBehaviour
     void Start()
     {
         poly_collider = GetComponent<PolygonCollider2D>();
-        set_positions();
+        setup_board();
     }
 
     // Update is called once per frame
@@ -79,32 +75,39 @@ public class Game : MonoBehaviour
     }
 
     //precompute various board related data
-    public void set_positions() {
+    public void setup_board() {
 
-        float unit_bot_width = get_width(get_y(1f/18f));
-        float icon_bot_width = get_width(get_y(1f/6f));
         row_bounds[0] = get_y(1f/3f);
         row_bounds[1] = get_y(2f/3f);
 
         for (int row = 0; row < 3; row++) {
+            float[] icon_ys = new float[3];
+            float[] icon_widths = new float[3];
+            float[] icon_scales = new float[3];
+            for (int i = 0; i < 3; i++) {
+                icon_ys[i] = get_y((2 - row) * 1f/3f + (i+1) * 1f/12f);
+                icon_widths[i] = get_width(icon_ys[i]);
+                icon_scales[i] = icon_widths[i] / base_width;
+                icon_ys[i] -= projection_height / 2f;
+            }
+
             float unit_y = get_y((2 - row) * 1f/3f + 1f/18f);
-            float icon_y = get_y((2 - row) * 1f/3f + 1f/6f);
-
             float unit_width = get_width(unit_y);
-            float icon_width = get_width(icon_y);
-
-            row_scales[row] = unit_width / unit_bot_width;
-            icon_scales[row] = icon_width / icon_bot_width;
-
+            row_scales[row] = unit_width / base_width;
             unit_y -= projection_height / 2f;
-            icon_y -= projection_height / 2f;
             
             for (int col = 0; col < 7; col++) {
                 float unit_x = unit_width / 7f * (col - 3);
-                float icon_x = icon_width / 7f * (col - 3);
-                board_positions[row][col] = transform.position + new Vector3(transform.position.x + unit_x * transform.lossyScale.x, transform.position.y + unit_y * transform.lossyScale.y, 0);
-                icon_positions[row][col] = transform.position + new Vector3(transform.position.x + icon_x * transform.lossyScale.x, transform.position.y + icon_y * transform.lossyScale.y, 0);
+                board_positions[row][col] = transform.position + new Vector3(unit_x * transform.lossyScale.x, unit_y * transform.lossyScale.y, 0);
+                
                 board_highlights[row][col] = transform.GetChild(row * 7 + col).gameObject;
+                board_icons[row][col] = new Icon[3];
+                for (int i = 0; i < 3; i++) {
+                    float icon_x = icon_widths[i] / 7f * (col - 3);
+                    board_icons[row][col][i] = (Instantiate(Resources.Load("Icon"), new Vector3(icon_x * transform.lossyScale.x, icon_ys[i] * transform.lossyScale.y, 0), Quaternion.identity, transform) as GameObject).GetComponent<Icon>();
+                    board_icons[row][col][i].gameObject.transform.localScale = new Vector3(icon_scales[i] / 2f, icon_scales[i] / 2f, 1); //NOTE THAT 2 IS JUST SOME RANDOM CONSTANT I ADDED CUZ IT LOOKED NICE
+                    board_icons[row][col][i].gameObject.SetActive(false);
+                }
             }
         }
     }
@@ -131,17 +134,17 @@ public class Game : MonoBehaviour
         return board_pos;
     }
 
-    public void set_valid_locations(string[][] locations) {
-        foreach (Icon icon in board_icons) {
-            Destroy(icon.gameObject);
-        }
-        board_icons.Clear();
+    public void set_valid_locations(string[][][] locations) {
 
+        //OPTIMIZE THIS
         valid_locations = locations;
         if (valid_locations == null) {
-            foreach (GameObject[] row in board_highlights) {
-                foreach (GameObject highlight in row) {
-                    highlight.SetActive(false);
+            for (int row = 0; row < 3; row++) {
+                for (int col = 0; col < 7; col++) {
+                    board_highlights[row][col].SetActive(false);
+                    for (int i = 0; i < 3; i++) {
+                        board_icons[row][col][i].gameObject.SetActive(false);
+                    }
                 }
             }
         }
@@ -150,14 +153,25 @@ public class Game : MonoBehaviour
                 for (int col = 0; col < 7; col++) {
                     if (valid_locations[row][col] != null) {
                         board_highlights[row][col].SetActive(true);
-                        Icon icon = (Instantiate(Resources.Load("Icon"), icon_positions[row][col], Quaternion.identity) as GameObject).GetComponent<Icon>();
-                        icon.gameObject.transform.localScale = new Vector3(icon_scales[row], icon_scales[row], 1f);
-                        icon.pre_init();
-                        icon.set_icon(valid_locations[row][col]);
-                        board_icons.Add(icon);
+                        if (valid_locations[row][col].Length == 1) {
+                            board_icons[row][col][1].set_icon(valid_locations[row][col][0]);
+                            board_icons[row][col][0].gameObject.SetActive(false);
+                            board_icons[row][col][1].gameObject.SetActive(true);
+                            board_icons[row][col][2].gameObject.SetActive(false);
+                        }
+                        else {
+                            board_icons[row][col][0].set_icon(valid_locations[row][col][0]);
+                            board_icons[row][col][2].set_icon(valid_locations[row][col][1]);
+                            board_icons[row][col][0].gameObject.SetActive(true);
+                            board_icons[row][col][1].gameObject.SetActive(false);
+                            board_icons[row][col][2].gameObject.SetActive(true);
+                        }
                     }
                     else {
                         board_highlights[row][col].SetActive(false);
+                        for (int i = 0; i < 3; i++) {
+                            board_icons[row][col][i].gameObject.SetActive(false);
+                        }
                     }
                 }
             }

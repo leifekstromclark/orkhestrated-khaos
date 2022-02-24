@@ -18,9 +18,8 @@ public class Counter : MonoBehaviour
     {
         
     }
-
-    //TEMPORARY SLOPPY SOLUTION WE SHOULD FIND A BETTER ONE LATER
-    public void pre_init() {
+    
+    void Awake() {
         text_mesh = GetComponent<TextMesh>();
     }
 

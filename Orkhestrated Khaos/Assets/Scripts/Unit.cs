@@ -37,8 +37,6 @@ public class Unit : MonoBehaviour
         avatar = transform.GetChild(0).gameObject;
         health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
         power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
-        health_counter.pre_init();
-        power_counter.pre_init();
         health_counter.set_value(health);
         power_counter.set_value(power);
 
@@ -175,12 +173,12 @@ public class Unit : MonoBehaviour
     }
     
     //gets valid placement (playing out of hand) locations on the board
-    public string[][] get_placement_locations() {
+    public string[][][] get_placement_locations() {
         //instantiate board-sized array of "false"
-        string[][] valid_locations = new string[3][] {
-            new string[7],
-            new string[7],
-            new string[7]
+        string[][][] valid_locations = new string[3][][] {
+            new string[7][],
+            new string[7][],
+            new string[7][]
         };
         //set placement column based on allegiance
         int col;
@@ -193,7 +191,7 @@ public class Unit : MonoBehaviour
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
             if (!game.board[row][col]) {
-                valid_locations[row][col] = "Place";
+                valid_locations[row][col] = new string[1]{"Place"};
             }
         }
         return valid_locations;

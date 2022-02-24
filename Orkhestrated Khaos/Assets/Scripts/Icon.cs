@@ -10,7 +10,7 @@ public class Icon : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -19,8 +19,8 @@ public class Icon : MonoBehaviour
         
     }
 
-    //TEMPORARY SLOPPY SOLUTION WE SHOULD FIND A BETTER ONE LATER
-    public void pre_init() {
+    void Awake()
+    {
         sprite_renderer = GetComponent<SpriteRenderer>();
     }
 
