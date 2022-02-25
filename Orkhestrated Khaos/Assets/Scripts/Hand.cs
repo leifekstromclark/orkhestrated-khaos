@@ -64,7 +64,7 @@ public class Hand : MonoBehaviour
             if (i == to_insert) {
                 skip = 1;
             }
-            units[i].gameObject.transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, 0, 0);
+            units[i].gameObject.transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, -1, 0);
         }
     }
 

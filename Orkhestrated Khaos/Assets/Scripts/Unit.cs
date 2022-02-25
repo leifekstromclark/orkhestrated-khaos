@@ -7,7 +7,12 @@ public class Unit : MonoBehaviour
 
     private Counter health_counter;
     private Counter power_counter;
-    private GameObject avatar;
+
+    //This STUFF IS MOST LIKELY TEMPORARY
+    private GameObject character;
+    private SpriteRenderer character_renderer;
+
+
     public Game game;
     public int power;
     public int health;
@@ -34,11 +39,13 @@ public class Unit : MonoBehaviour
     {
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
-        avatar = transform.GetChild(0).gameObject;
+        character = transform.GetChild(0).gameObject;
+        character_renderer = character.GetComponent<SpriteRenderer>();
         health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
         power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
         health_counter.set_value(health);
         power_counter.set_value(power);
+        allegiance = true;
 
         if (!allegiance) {
             flip();
@@ -112,7 +119,7 @@ public class Unit : MonoBehaviour
         }
 
         //set transform to follow the mouse
-        transform.position = game.mouse_position + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+        transform.position = game.mouse_position;
     }
 
     //called when a drag is finished
@@ -205,12 +212,10 @@ public class Unit : MonoBehaviour
         //card is now in play
         in_play = true;
         //set card to corresponding scale
-        avatar.transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
-        if (!allegiance) {
-            avatar.transform.localScale = new Vector3(-1 * avatar.transform.localScale.x, avatar.transform.localScale.y, 1f);
-        }
+        transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
+        character_renderer.sortingOrder = -3 + position[0];
         //move card to corresponding position
-        transform.position = game.board_positions[position[0]][position[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+        transform.position = game.board_positions[position[0]][position[1]];
     }
 
     /*
