@@ -59,7 +59,7 @@ public class Selector : MonoBehaviour
             }
             aux_highlights[i].assign_square(type, pos);
 
-            y = game.get_y((2 - pos[0]) * 1f/3f + 1f/12f + i * 1f/6f);
+            y = game.get_y((2 - pos[0]) * 1f/3f + 3f/12f - i * 1f/6f);
             width = game.get_width(y);
             y -= game.projection_height / 2f;
             x = width / 7f * (pos[1] - 3);

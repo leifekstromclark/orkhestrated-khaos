@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6524642769948696309}
   - component: {fileID: 7231076652232040687}
   - component: {fileID: 2066627297579386648}
+  - component: {fileID: 4109498533432176295}
   m_Layer: 0
   m_Name: Ork
   m_TagString: Untagged
@@ -85,6 +86,17 @@ MonoBehaviour:
   in_play: 0
   board_loc: 
   hand: {fileID: 0}
+--- !u!210 &4109498533432176295
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7040188596713617802}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &7571342084313983210
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,7 +122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7571342084313983210}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 6524642769948696309}
@@ -155,7 +167,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 85b6a80940d0466468fb951662f65b90, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

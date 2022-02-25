@@ -13,6 +13,7 @@ public class Game : MonoBehaviour
     public float top_width = 6.806f;
 
     private float[] row_bounds = new float[2];
+    private float[] selector_bounds = new float[3];
 
     public Unit[][] board = new Unit[3][] {
         new Unit[7],
@@ -68,13 +69,19 @@ public class Game : MonoBehaviour
         return base_width - (base_width - top_width) * y / projection_height;
     }
 
+
+    //OPTIMIZE THIS ONCE WE KNOW MORE ABOUT HOW THINGS ARE GONNA GET INSTANTIATED
+
     //precompute various board related data
     public void setup_board() {
 
-        row_bounds[0] = get_y(1f/3f);
-        row_bounds[1] = get_y(2f/3f);
+        for (int i = 0; i < 2; i++) {
+            row_bounds[i] = get_y((2-i)/3f);
+        }
 
         for (int row = 0; row < 3; row++) {
+
+            selector_bounds[row] = get_y((2 - row) * 1f/3f + 1f/6f);
 
             float y = get_y((2 - row) * 1f/3f + 1f/18f);
             float width = get_width(y);
@@ -93,23 +100,33 @@ public class Game : MonoBehaviour
 
 
     //takes a position of the mouse in the world. returns a corresponding space on the board
-    public int[] mouse_to_board_pos(Vector3 mouse_position) {
+    public (int[], int) mouse_to_board_pos(Vector3 mouse_position) {
         //WATCH OUT FOR 7 COL INDICES THIS IS NOT ACCOUNTED FOR AND COULD BE A PROBLEM (I DONT THINK IT IS RN THO)
         int[] board_pos = new int[2];
         float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y + projection_height / 2f;
         float width = get_width(y_pos);
-        if (y_pos < row_bounds[0]) {
-            board_pos[0] = 2;
+        int aux = 0;
+        if (y_pos > row_bounds[0]) {
+            board_pos[0] = 0;
+            if (y_pos < selector_bounds[0]) {
+                aux = 1;
+            }
         }
-        else if (y_pos < row_bounds[1]) {
+        else if (y_pos > row_bounds[1]) {
             board_pos[0] = 1;
+            if (y_pos < selector_bounds[1]) {
+                aux = 1;
+            }
         }
         else {
-            board_pos[0] = 0;
+            board_pos[0] = 2;
+            if (y_pos < selector_bounds[2]) {
+                aux = 1;
+            }
         }
         float x_pos = (mouse_position.x - transform.position.x) / transform.lossyScale.x + width / 2f;
         board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
-        return board_pos;
+        return (board_pos, aux);
     }
 
     public void set_valid_locations(string[][][] locations) {

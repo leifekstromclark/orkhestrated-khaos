@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Unit : MonoBehaviour
 {
@@ -8,10 +9,8 @@ public class Unit : MonoBehaviour
     private Counter health_counter;
     private Counter power_counter;
 
-    //THIS STUFF IS MOST LIKELY TEMPORARY
-    private GameObject character;
-    private SpriteRenderer character_renderer;
 
+    private SortingGroup sorting_group;
 
     public Game game;
     public int power;
@@ -39,8 +38,7 @@ public class Unit : MonoBehaviour
     {
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
-        character = transform.GetChild(0).gameObject;
-        character_renderer = character.GetComponent<SpriteRenderer>();
+        sorting_group = GetComponent<SortingGroup>();
         health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
         power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
         health_counter.set_value(health);
@@ -52,7 +50,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    //FIGURE OUT HOW TO CHANGE THE LAYER OF THE FUCKING COUNTERS AND FIX THE DRAGGING / HAND LAYER SITUATION
+    //TWEAK SORTING DETAILS LATER ONCE WE HAVE ACTUAL GRAPHICS (REMEMBER THAT SORTING GROUPS, CUSTOM PIVOTS AND SPRITE SORT POINTS ARE USEFUL AND THAT YOU CAN MANUALLY SET SORTING LAYER IN CODE)
 
     //CONSIDER MAKING POSITION UPDATE NOT EVENTBASED
 
@@ -108,7 +106,7 @@ public class Unit : MonoBehaviour
             //update my scale and layer
             transform.localScale = new Vector3(1f, 1f, 1f);
             //set layer to default
-            character_renderer.sortingLayerName = "Default";
+            sorting_group.sortingLayerName = "Default";
             //begin the drag
             is_dragging = true;
         }
@@ -125,7 +123,7 @@ public class Unit : MonoBehaviour
         //if moused over board
         if (game.poly_collider.OverlapPoint(game.mouse_position)) {
             //get the space that is moused over
-            int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
+            (int[] board_pos, int aux) = game.mouse_to_board_pos(game.mouse_position);
             //if the space is a valid space to place in
             if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
                 //MAKE THINGS LIGHT UP AND SHIT
@@ -148,23 +146,31 @@ public class Unit : MonoBehaviour
         //if moused over board
         else if (game.poly_collider.OverlapPoint(game.mouse_position)) {
             //get the space that is moused over
-            int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
+            (int[] board_pos, int aux) = game.mouse_to_board_pos(game.mouse_position);
             //if the space is a valid space to place or swap in
             if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
-                success = true;
-                if (in_play) {
-                    swap(board_pos);
+                string action;
+                if (game.valid_locations[board_pos[0]][board_pos[1]].Length == 1) {
+                    action = game.valid_locations[board_pos[0]][board_pos[1]][0];
                 }
                 else {
-                    place(board_pos);
+                    action = game.valid_locations[board_pos[0]][board_pos[1]][aux];
                 }
-                
+                if (in_play) {
+                    swap(board_pos, action);
+                }
+                else {
+                    place(board_pos, action);
+                }
+                success = true;
             }
         }
         //if nothing valid was moused over
         if (!success) {
             if (in_play) {
                 set_position(board_loc);
+                //put unit back in the battlefield layer
+                sorting_group.sortingLayerName = "Battlefield";
             }
             else {
                 //append card to end of hand
@@ -227,17 +233,20 @@ public class Unit : MonoBehaviour
         return valid_locations;
     }
 
-    public void place(int[] pos) {
-        //insert card into board
-        game.board[pos[0]][pos[1]] = this;
-        //keep track of location on board
-        board_loc = pos;
-        //card is now in play
-        in_play = true;
-        //update transform
-        set_position(pos);
-        //shove me in the battlefield layer
-        character_renderer.sortingLayerName = "Battlefield";
+    public void place(int[] pos, string action) {
+        if (action == "Place") {
+            //insert card into board
+            game.board[pos[0]][pos[1]] = this;
+            //keep track of location on board
+            board_loc = pos;
+            //card is now in play
+            in_play = true;
+            //update transform
+            set_position(pos);
+            //shove me in the battlefield layer
+            sorting_group.sortingLayerName = "Battlefield";
+        }
+        //ADD EMBARK
     }
 
     public string[][][] get_swap_locations() {
@@ -264,24 +273,27 @@ public class Unit : MonoBehaviour
         return valid_locations;
     }
 
-    public void swap(int[] pos) {
-        Unit other = game.board[pos[0]][pos[1]];
-        //swap units
-        game.board[board_loc[0]][board_loc[1]] = other;
-        game.board[pos[0]][pos[1]] = this;
-        //update other unit if there is one
-        if (other != null) {
+    public void swap(int[] pos, string action) {
+        if (action == "Swap") {
+            Unit other = game.board[pos[0]][pos[1]];
+            //swap units
+            game.board[board_loc[0]][board_loc[1]] = other;
+            game.board[pos[0]][pos[1]] = this;
+            //update other unit if there is one
+            if (other != null) {
+                //keep track of location on board
+                other.board_loc = board_loc;
+                //update transform
+                other.set_position(board_loc);
+            }
             //keep track of location on board
-            other.board_loc = board_loc;
+            board_loc = pos;
             //update transform
-            other.set_position(board_loc);
+            set_position(pos);
+            //shove me in the battlefield layer
+            sorting_group.sortingLayerName = "Battlefield";
         }
-        //keep track of location on board
-        board_loc = pos;
-        //update transform
-        set_position(pos);
-        //shove me in the battlefield layer
-        character_renderer.sortingLayerName = "Battlefield";
+        //ADD EMBARK
     }
 
     public void set_position(int[] pos) {
