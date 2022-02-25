@@ -302,6 +302,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8c83d265e11c1a4b869707223c67054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projection_height: 3.01
+  base_width: 7.936
+  top_width: 6.806
   row_scales:
   - 0
   - 0
@@ -398,7 +401,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -2
+  m_SortingOrder: -3
   m_Sprite: {fileID: 21300000, guid: 4739337bb7c400f44b058e28f02da8f2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

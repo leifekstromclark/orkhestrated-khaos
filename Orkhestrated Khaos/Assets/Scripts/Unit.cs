@@ -191,7 +191,7 @@ public class Unit : MonoBehaviour
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
             if (!game.board[row][col]) {
-                valid_locations[row][col] = new string[2]{"Place", "Target"};
+                valid_locations[row][col] = new string[1]{"Place"};
             }
         }
         return valid_locations;

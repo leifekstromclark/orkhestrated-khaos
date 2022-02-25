@@ -28,13 +28,13 @@ public class Selector : MonoBehaviour
     void Awake()
     {
         for (int i = 0; i < 2; i++) {
-            aux_icons[i] = transform.GetChild(i).gameObject.GetComponent<Icon>();
+            aux_highlights[i] = transform.GetChild(i).gameObject.GetComponent<Highlight>();
         }
-        base_icon = transform.GetChild(2).gameObject.GetComponent<Icon>();
+        base_highlight = transform.GetChild(2).gameObject.GetComponent<Highlight>();
         for (int i = 0; i < 2; i++) {
-            aux_highlights[i] = transform.GetChild(i+3).gameObject.GetComponent<Highlight>();
+            aux_icons[i] = transform.GetChild(i+3).gameObject.GetComponent<Icon>();
         }
-        base_highlight = transform.GetChild(5).gameObject.GetComponent<Highlight>();
+        base_icon = transform.GetChild(5).gameObject.GetComponent<Icon>();
         game = transform.parent.gameObject.GetComponent<Game>();
         gameObject.SetActive(false);
     }
