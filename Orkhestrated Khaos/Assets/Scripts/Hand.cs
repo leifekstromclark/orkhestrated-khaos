@@ -20,6 +20,8 @@ public class Hand : MonoBehaviour
         //TESTING
         draw_card();
         draw_card();
+        draw_card();
+        draw_card();
     }
 
     // Update is called once per frame
@@ -30,7 +32,7 @@ public class Hand : MonoBehaviour
     }
 
     //sets a to_insert value based on which part of the hand is moused over during a placement drag
-    public bool set_to_insert(Vector3 mouse_position) {
+    public void set_to_insert(Vector3 mouse_position) {
         if (box_collider.OverlapPoint(mouse_position)) {
             float float_pos = (mouse_position.x - (transform.position.x - ((float)units.Count + 1) * spacing / 2)) / spacing;
             int int_pos;
@@ -44,11 +46,9 @@ public class Hand : MonoBehaviour
                 int_pos = (int)Math.Floor(float_pos);
             }
             to_insert = int_pos;
-            return true;
         }
         else {
             to_insert = -1;
-            return false;
         }
     }
 

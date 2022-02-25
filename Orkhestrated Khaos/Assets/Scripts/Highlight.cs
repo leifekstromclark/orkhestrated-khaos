@@ -8,7 +8,7 @@ public class Highlight : MonoBehaviour
     private SpriteRenderer sprite_renderer;
     private static Dictionary<string, Color> color_dict = new Dictionary<string, Color>(){
         ["Place"] = Color.blue,
-        ["Target"] = Color.red
+        ["Swap"] = Color.green
     };
 
     // Start is called before the first frame update

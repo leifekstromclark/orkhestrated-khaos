@@ -52,6 +52,10 @@ public class Unit : MonoBehaviour
         }
     }
 
+    //NEED MORE SUSTAINABLE LAYER SITUATION (PUT ALL PIECES OF ORK ART IN SUBLAYER?)
+
+    //CONSIDER MAKING POSITION UPDATE NOT EVENTBASED
+
     // Update is called once per frame
     void Update()
     {
@@ -61,7 +65,6 @@ public class Unit : MonoBehaviour
         }
         //if drag is triggered
         if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
-            is_dragging = true;
             begin_drag();
         }
         //if left mouse is down and over my collider
@@ -82,39 +85,49 @@ public class Unit : MonoBehaviour
         drag_start = Input.mousePosition;
     }
 
-    //called when a drag is started
+    //called when a drag input is detected
     public void begin_drag() {
+        string[][][] valid_locations;
         //if card is on board (swapping lanes)
         if (in_play) {
-            
+            //get some valid placement locations for the board
+            valid_locations = get_swap_locations();
         }
         //if card is in hand (playing card)
         else {
             //get some valid placement locations for the board
-            game.set_valid_locations(get_placement_locations());
-            //remove card from hand list
-            hand.units.Remove(this);
+            valid_locations = get_placement_locations();
+            if (valid_locations != null) {
+                //remove card from hand list
+                hand.units.Remove(this);
+            }
+        }
+        if (valid_locations != null) {
+            //send valid locations to game
+            game.set_valid_locations(valid_locations);
+            //update my scale and layer
+            transform.localScale = new Vector3(1f, 1f, 1f);
+            character_renderer.sortingOrder = -1;
+            //begin the drag
+            is_dragging = true;
         }
     }
 
     //called each frame when dragging
     public void drag() {
-        //ADD IN PLAY / NOT IN PLAY CONDITIONALS
+        //if playing a card from the hand
+        if (!in_play) {
+            //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
+            hand.set_to_insert(game.mouse_position);
+        }
 
-        //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
-        //returns true if one is needed. otherwise false (to_insert got set to -1)
-        bool inserting = hand.set_to_insert(game.mouse_position);
-
-        //if not moused over hand (essentially)
-        if (!inserting) {
-            //if moused over board
-            if (game.poly_collider.OverlapPoint(game.mouse_position)) {
-                //get the space that is moused over
-                int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
-                //if the space is a valid space to place in
-                if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
-                    //MAKE THINGS LIGHT UP AND SHIT
-                }
+        //if moused over board
+        if (game.poly_collider.OverlapPoint(game.mouse_position)) {
+            //get the space that is moused over
+            int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
+            //if the space is a valid space to place in
+            if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
+                //MAKE THINGS LIGHT UP AND SHIT
             }
         }
 
@@ -124,36 +137,40 @@ public class Unit : MonoBehaviour
 
     //called when a drag is finished
     public void end_drag() {
-        //if in play (swapping)
-        if (in_play) {
-            //CALL SWAP FUNCTION HERE
-            transform.position = game.board_positions[board_loc[0]][board_loc[1]] + new Vector3(0f, box_collider.size.y * transform.lossyScale.y / 2f, 0f);
+        bool success = false;
+        //if not in play (playing from hand) and moused over hand
+        if (!in_play && hand.box_collider.OverlapPoint(game.mouse_position)) {
+            //insert card into hand
+            hand.units.Insert(hand.to_insert, this);
+            success = true;
         }
-        //if not in play (playing from hand)
-        else {
-            bool placed = false;
-            //if moused over hand
-            if (hand.box_collider.OverlapPoint(game.mouse_position)) {
-                //insert card into hand
-                hand.units.Insert(hand.to_insert, this);
-                placed = true;
-            }
-            //if moused over board
-            else if (game.poly_collider.OverlapPoint(game.mouse_position)) {
-                //get the space that is moused over
-                int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
-                //if the space is a valid space to place in
-                if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
-                    place(board_pos);
-                    placed = true;
+        //if moused over board
+        else if (game.poly_collider.OverlapPoint(game.mouse_position)) {
+            //get the space that is moused over
+            int[] board_pos = game.mouse_to_board_pos(game.mouse_position);
+            //if the space is a valid space to place or swap in
+            if (game.valid_locations[board_pos[0]][board_pos[1]] != null) {
+                success = true;
+                if (in_play) {
+                    swap(board_pos);
                 }
+                else {
+                    place(board_pos);
+                }
+                
             }
-            //if nothing valid was moused over
-            if (!placed) {
+        }
+        //if nothing valid was moused over
+        if (!success) {
+            if (in_play) {
+                set_position(board_loc);
+            }
+            else {
                 //append card to end of hand
                 hand.units.Add(this);
             }
         }
+
         //clear valid locations
         game.set_valid_locations(null);
     }
@@ -195,39 +212,80 @@ public class Unit : MonoBehaviour
         else {
             col = 6;
         }
+        bool empty = true;
         //check if each space in the column is valid
         for (int row = 0; row < 3; row++) {
             if (!game.board[row][col]) {
                 valid_locations[row][col] = new string[1]{"Place"};
+                empty = false;
             }
+        }
+        if (empty) {
+            valid_locations = null;
         }
         return valid_locations;
     }
 
-    public void place(int[] position) {
+    public void place(int[] pos) {
         //insert card into board
-        game.board[position[0]][position[1]] = this;
+        game.board[pos[0]][pos[1]] = this;
         //keep track of location on board
-        board_loc = position;
+        board_loc = pos;
         //card is now in play
         in_play = true;
-        //set card to corresponding scale
-        transform.localScale = new Vector3(game.row_scales[position[0]], game.row_scales[position[0]], 1f);
-        character_renderer.sortingOrder = -3 + position[0];
-        //move card to corresponding position
-        transform.position = game.board_positions[position[0]][position[1]];
+        //update transform
+        set_position(pos);
     }
 
-    /*
-
-    public string[][] get_swap_locations() {
+    public string[][][] get_swap_locations() {
+        //instantiate board-sized array of "false"
+        string[][][] valid_locations = new string[3][][] {
+            new string[7][],
+            new string[7][],
+            new string[7][]
+        };
         
+        bool empty = true;
+        if (!game.board[1][board_loc[1]] || game.board[1][board_loc[1]].allegiance == allegiance) {
+            //check if each space in the column is valid
+            for (int row = 0; row < 3; row++) {
+                if (row != board_loc[0] && (!game.board[row][board_loc[1]] || game.board[row][board_loc[1]].allegiance == allegiance)) {
+                    valid_locations[row][board_loc[1]] = new string[1]{"Swap"};
+                    empty = false;
+                }
+            }
+        }
+        if (empty) {
+            valid_locations = null;
+        }
+        return valid_locations;
     }
 
-    public void swap(int[] position) {
-
+    public void swap(int[] pos) {
+        Unit other = game.board[pos[0]][pos[1]];
+        //swap units
+        game.board[board_loc[0]][board_loc[1]] = other;
+        game.board[pos[0]][pos[1]] = this;
+        //update other unit if there is one
+        if (other != null) {
+            //keep track of location on board
+            other.board_loc = board_loc;
+            //update transform
+            other.set_position(board_loc);
+        }
+        //keep track of location on board
+        board_loc = pos;
+        //update transform
+        set_position(pos);
     }
-    */
+
+    public void set_position(int[] pos) {
+        //set card to corresponding scale
+        transform.localScale = new Vector3(game.row_scales[pos[0]], game.row_scales[pos[0]], 1f);
+        character_renderer.sortingOrder = -4 + pos[0];
+        //move card to corresponding position
+        transform.position = game.board_positions[pos[0]][pos[1]];
+    }
 
     public void set_health(int val) {
         health = val;
