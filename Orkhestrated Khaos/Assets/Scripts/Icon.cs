@@ -19,6 +19,7 @@ public class Icon : MonoBehaviour
         
     }
 
+    // Awake is called on instantiation
     void Awake()
     {
         sprite_renderer = GetComponent<SpriteRenderer>();

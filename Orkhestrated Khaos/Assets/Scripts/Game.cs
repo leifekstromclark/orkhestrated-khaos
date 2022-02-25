@@ -8,9 +8,9 @@ public class Game : MonoBehaviour
 
     //THIS CLASS WILL PROBABLY GET SPLIT INTO MULTIPLE IN THE FUTURE
 
-    private float projection_height = 3.01f;
-    private float base_width = 7.936f;
-    private float top_width = 6.806f;
+    public float projection_height = 3.01f;
+    public float base_width = 7.936f;
+    public float top_width = 6.806f;
 
     private float[] row_bounds = new float[2];
 
@@ -26,19 +26,13 @@ public class Game : MonoBehaviour
         new Vector3[7]
     };
 
-    public GameObject[][] board_highlights = new GameObject[3][] {
-        new GameObject[7],
-        new GameObject[7],
-        new GameObject[7]
-    };
-
-    public Icon[][][] board_icons = new Icon[3][][] {
-        new Icon[7][],
-        new Icon[7][],
-        new Icon[7][]
-    };
-
     public float[] row_scales = new float[3];
+
+    public Selector[][] selectors = new Selector[3][] {
+        new Selector[7],
+        new Selector[7],
+        new Selector[7]
+    };
 
     public Player[] players = new Player[2];
 
@@ -66,11 +60,11 @@ public class Game : MonoBehaviour
         mouse_position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
     
-    private float get_y(float relative_height){
+    public float get_y(float relative_height){
         return projection_height * relative_height / (1 - (base_width / top_width - 1) * (1 - relative_height));
     }
 
-    private float get_width(float y) {
+    public float get_width(float y) {
         return base_width - (base_width - top_width) * y / projection_height;
     }
 
@@ -81,38 +75,22 @@ public class Game : MonoBehaviour
         row_bounds[1] = get_y(2f/3f);
 
         for (int row = 0; row < 3; row++) {
-            float[] icon_ys = new float[3];
-            float[] icon_widths = new float[3];
-            float[] icon_scales = new float[3];
-            for (int i = 0; i < 3; i++) {
-                icon_ys[i] = get_y((2 - row) * 1f/3f + (i+1) * 1f/12f);
-                icon_widths[i] = get_width(icon_ys[i]);
-                icon_scales[i] = icon_widths[i] / base_width;
-                icon_ys[i] -= projection_height / 2f;
-            }
 
-            float unit_y = get_y((2 - row) * 1f/3f + 1f/18f);
-            float unit_width = get_width(unit_y);
-            row_scales[row] = unit_width / base_width;
-            unit_y -= projection_height / 2f;
+            float y = get_y((2 - row) * 1f/3f + 1f/18f);
+            float width = get_width(y);
+            row_scales[row] = width / base_width;
+            y -= projection_height / 2f;
             
             for (int col = 0; col < 7; col++) {
-                float unit_x = unit_width / 7f * (col - 3);
-                board_positions[row][col] = transform.position + new Vector3(unit_x * transform.lossyScale.x, unit_y * transform.lossyScale.y, 0);
-                
-                board_highlights[row][col] = transform.GetChild(row * 7 + col).gameObject;
-                board_icons[row][col] = new Icon[3];
-                for (int i = 0; i < 3; i++) {
-                    float icon_x = icon_widths[i] / 7f * (col - 3);
-                    board_icons[row][col][i] = (Instantiate(Resources.Load("Icon"), new Vector3(icon_x * transform.lossyScale.x, icon_ys[i] * transform.lossyScale.y, 0), Quaternion.identity, transform) as GameObject).GetComponent<Icon>();
-                    board_icons[row][col][i].gameObject.transform.localScale = new Vector3(icon_scales[i] / 2f, icon_scales[i] / 2f, 1); //NOTE THAT 2 IS JUST SOME RANDOM CONSTANT I ADDED CUZ IT LOOKED NICE
-                    board_icons[row][col][i].gameObject.SetActive(false);
-                }
+                float x = width / 7f * (col - 3);
+                board_positions[row][col] = transform.position + new Vector3(x * transform.lossyScale.x, y * transform.lossyScale.y, 0);
+
+                selectors[row][col] = (Instantiate(Resources.Load("Selector"), transform) as GameObject).GetComponent<Selector>();
+                selectors[row][col].assign_square(new int[2]{row, col});
             }
         }
     }
 
-    
 
     //takes a position of the mouse in the world. returns a corresponding space on the board
     public int[] mouse_to_board_pos(Vector3 mouse_position) {
@@ -135,44 +113,19 @@ public class Game : MonoBehaviour
     }
 
     public void set_valid_locations(string[][][] locations) {
-
         //OPTIMIZE THIS
         valid_locations = locations;
         if (valid_locations == null) {
-            for (int row = 0; row < 3; row++) {
-                for (int col = 0; col < 7; col++) {
-                    board_highlights[row][col].SetActive(false);
-                    for (int i = 0; i < 3; i++) {
-                        board_icons[row][col][i].gameObject.SetActive(false);
-                    }
+            foreach (Selector[] row in selectors) {
+                foreach (Selector selector in row) {
+                    selector.set_status(null);
                 }
             }
         }
         else {
             for (int row = 0; row < 3; row++) {
                 for (int col = 0; col < 7; col++) {
-                    if (valid_locations[row][col] != null) {
-                        board_highlights[row][col].SetActive(true);
-                        if (valid_locations[row][col].Length == 1) {
-                            board_icons[row][col][1].set_icon(valid_locations[row][col][0]);
-                            board_icons[row][col][0].gameObject.SetActive(false);
-                            board_icons[row][col][1].gameObject.SetActive(true);
-                            board_icons[row][col][2].gameObject.SetActive(false);
-                        }
-                        else {
-                            board_icons[row][col][0].set_icon(valid_locations[row][col][0]);
-                            board_icons[row][col][2].set_icon(valid_locations[row][col][1]);
-                            board_icons[row][col][0].gameObject.SetActive(true);
-                            board_icons[row][col][1].gameObject.SetActive(false);
-                            board_icons[row][col][2].gameObject.SetActive(true);
-                        }
-                    }
-                    else {
-                        board_highlights[row][col].SetActive(false);
-                        for (int i = 0; i < 3; i++) {
-                            board_icons[row][col][i].gameObject.SetActive(false);
-                        }
-                    }
+                    selectors[row][col].set_status(valid_locations[row][col]);
                 }
             }
         }
