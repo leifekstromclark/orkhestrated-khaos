@@ -8,7 +8,7 @@ public class Unit : MonoBehaviour
     private Counter health_counter;
     private Counter power_counter;
 
-    //This STUFF IS MOST LIKELY TEMPORARY
+    //THIS STUFF IS MOST LIKELY TEMPORARY
     private GameObject character;
     private SpriteRenderer character_renderer;
 
@@ -52,7 +52,7 @@ public class Unit : MonoBehaviour
         }
     }
 
-    //NEED MORE SUSTAINABLE LAYER SITUATION (PUT ALL PIECES OF ORK ART IN SUBLAYER?)
+    //FIGURE OUT HOW TO CHANGE THE LAYER OF THE FUCKING COUNTERS AND FIX THE DRAGGING / HAND LAYER SITUATION
 
     //CONSIDER MAKING POSITION UPDATE NOT EVENTBASED
 
@@ -107,7 +107,8 @@ public class Unit : MonoBehaviour
             game.set_valid_locations(valid_locations);
             //update my scale and layer
             transform.localScale = new Vector3(1f, 1f, 1f);
-            character_renderer.sortingOrder = -1;
+            //set layer to default
+            character_renderer.sortingLayerName = "Default";
             //begin the drag
             is_dragging = true;
         }
@@ -235,6 +236,8 @@ public class Unit : MonoBehaviour
         in_play = true;
         //update transform
         set_position(pos);
+        //shove me in the battlefield layer
+        character_renderer.sortingLayerName = "Battlefield";
     }
 
     public string[][][] get_swap_locations() {
@@ -277,12 +280,13 @@ public class Unit : MonoBehaviour
         board_loc = pos;
         //update transform
         set_position(pos);
+        //shove me in the battlefield layer
+        character_renderer.sortingLayerName = "Battlefield";
     }
 
     public void set_position(int[] pos) {
         //set card to corresponding scale
         transform.localScale = new Vector3(game.row_scales[pos[0]], game.row_scales[pos[0]], 1f);
-        character_renderer.sortingOrder = -4 + pos[0];
         //move card to corresponding position
         transform.position = game.board_positions[pos[0]][pos[1]];
     }
