@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+Counter.cs
+A script managing text objects that changes their text based on calls.
+
+*/
 public class Counter : MonoBehaviour
 {
 

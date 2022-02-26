@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+/*
+Unit.cs
+
+- Defines behavior of individual units
+Properties:
+- Health, Power, In Play, Upkeep, Cost, Attacks
+
+*/
+
+/* To-do: 
+    - Add comments to document variables below:
+    - Support for neutral units (tentative)
+*/
+
 public class Unit : MonoBehaviour
 {
 
@@ -13,24 +27,28 @@ public class Unit : MonoBehaviour
     private SortingGroup sorting_group;
 
     public Game game;
+    // Reference to game class -> Handles turn and board properties (tentative)
+    
+    // Unit stats
     public int power;
     public int health;
-    public int speed;
-    public int range;
-    public int attacks;
-    public int cost;
+    public int speed; // Squares/turn
+    public int range; 
+    public int attacks; // attacks/turn
+    public int cost; 
     public int upkeep;
-    public int loyalty;
-    public bool allegiance;
-
+    public int loyalty; 
+    public bool allegiance; 
+    
+    // Unity properties
     public BoxCollider2D box_collider;
     private bool pressed;
     private Vector3 drag_start;
     private bool is_dragging;
-    private int drag_tolerance = 20;
+    private int drag_tolerance = 20; // # of pixels dragged before drag starts
     
-    public bool in_play;
-    public int[] board_loc;
+    public bool in_play; // true -> on_board
+    public int[] board_loc; // 2d int -> [row, column] 
     public Hand hand;
 
     // Start is called before the first frame update
@@ -39,14 +57,18 @@ public class Unit : MonoBehaviour
         box_collider = GetComponent<BoxCollider2D>();
         in_play = false;
         sorting_group = GetComponent<SortingGroup>();
+
+        // Load health and power from resources file
         health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
         power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
         health_counter.set_value(health);
         power_counter.set_value(power);
+
         allegiance = true;
 
         if (!allegiance) {
-            flip();
+            // to delete?
+            flip(); // flips unit
         }
     }
 
@@ -63,7 +85,7 @@ public class Unit : MonoBehaviour
         }
         //if drag is triggered
         if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
-            begin_drag();
+            begin_drag(); 
         }
         //if left mouse is down and over my collider
         if (Input.GetMouseButtonDown(0) && box_collider.OverlapPoint(game.mouse_position)) {
@@ -86,6 +108,7 @@ public class Unit : MonoBehaviour
     //called when a drag input is detected
     public void begin_drag() {
         string[][][] valid_locations;
+
         //if card is on board (swapping lanes)
         if (in_play) {
             //get some valid placement locations for the board
@@ -102,7 +125,7 @@ public class Unit : MonoBehaviour
         }
         if (valid_locations != null) {
             //send valid locations to game
-            game.set_valid_locations(valid_locations);
+            game.set_valid_locations(valid_locations); 
             //update my scale and layer
             transform.localScale = new Vector3(1f, 1f, 1f);
             //set layer to default
@@ -200,7 +223,7 @@ public class Unit : MonoBehaviour
     }
 
     public void receive_event(Event data) {
-
+        
     }
     
     //gets valid placement (playing out of hand) locations on the board
@@ -256,8 +279,9 @@ public class Unit : MonoBehaviour
             new string[7][],
             new string[7][]
         };
-        
+
         bool empty = true;
+        // If:      middle row in column is empty             or contains allied unit
         if (!game.board[1][board_loc[1]] || game.board[1][board_loc[1]].allegiance == allegiance) {
             //check if each space in the column is valid
             for (int row = 0; row < 3; row++) {
@@ -293,7 +317,8 @@ public class Unit : MonoBehaviour
             //shove me in the battlefield layer
             sorting_group.sortingLayerName = "Battlefield";
         }
-        //ADD EMBARK
+        //ADD EMBARK *********************************
+
     }
 
     public void set_position(int[] pos) {
@@ -305,15 +330,16 @@ public class Unit : MonoBehaviour
 
     public void set_health(int val) {
         health = val;
-        health_counter.set_value(val);
+        health_counter.set_value(val); // Updates counter
     }
 
     public void set_power(int val) {
         power = val;
-        power_counter.set_value(val);
+        power_counter.set_value(val); // Updates counter
     }
 
     public void flip() {
+        // Flips unit
         health_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
         power_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
         transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);

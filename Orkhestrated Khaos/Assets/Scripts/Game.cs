@@ -105,24 +105,19 @@ public class Game : MonoBehaviour
         int[] board_pos = new int[2];
         float y_pos = (mouse_position.y - transform.position.y) / transform.lossyScale.y + projection_height / 2f;
         float width = get_width(y_pos);
-        int aux = 0;
+        int aux = 0; // represents whether you're moused over the lower or upper half of the square
+
         if (y_pos > row_bounds[0]) {
             board_pos[0] = 0;
-            if (y_pos < selector_bounds[0]) {
-                aux = 1;
-            }
+            if (y_pos < selector_bounds[0]) aux = 1;
         }
         else if (y_pos > row_bounds[1]) {
             board_pos[0] = 1;
-            if (y_pos < selector_bounds[1]) {
-                aux = 1;
-            }
+            if (y_pos < selector_bounds[1]) aux = 1;
         }
         else {
             board_pos[0] = 2;
-            if (y_pos < selector_bounds[2]) {
-                aux = 1;
-            }
+            if (y_pos < selector_bounds[2]) aux = 1;
         }
         float x_pos = (mouse_position.x - transform.position.x) / transform.lossyScale.x + width / 2f;
         board_pos[1] = (int)Math.Floor(x_pos / (width / 7f));
