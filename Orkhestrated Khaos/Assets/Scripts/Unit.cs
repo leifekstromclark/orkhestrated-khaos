@@ -76,6 +76,8 @@ public class Unit : MonoBehaviour
 
     //CONSIDER MAKING POSITION UPDATE NOT EVENTBASED
 
+    //DONT FORGET THAT CUSTOM AXIS Y IS ON
+
     // Update is called once per frame
     void Update()
     {
