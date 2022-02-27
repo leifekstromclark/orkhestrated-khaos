@@ -149,93 +149,34 @@ public class Game : MonoBehaviour
             Array.Reverse(row);
         }
     }
-    /*
+
     public void combat()
     {
-        if (turn) {
-            reverse_board();
-        }
+        //DEBUFFS AND STATUS EFFECTS SHOULD BE HANDLED IN HERE OR A SIMILAR GLOBAL LAYER + EVENT HANDLER PRLLY PLAYS SOME ROLE WITH THIS STUFF (Maybe there could be some sort of way to check debuffs or status effects from the unit class hmmm)
 
-        foreach (Unit[] row in board) {
-            for (int i=1; i < row.Length; i++) {
-                Unit unit = row[i];
+        for (int col = 1; col < 7; col++) {
+            for (int row = 0; row < 2; row++) {
+                Unit unit = board[row][col];
                 if (unit && unit.allegiance == turn) {
-                    Unit target_unit = null;
-                    Player target_player = null;
-                    Unit attacker;
-                    int moves = unit.speed;
-                    int attacks = unit.attacks;
-                    int embarked_attacks = 0;
-                    if (unit is Vehicle && unit.embarked) {
-                        embarked_attacks = unit.embarked.attacks;
-                    }
-                    while (moves > 0 || target_unit || target_player) {
-
-                        target_unit = null;
-                        target_player = null;
-                        attacker = null;
-
-                        // Assign unit as attacker if able
-                        if (attacks > 0) {
-                            attacker = unit;
-                        }
-
-                        // Assign embarked unit as attacker if able
-                        else if (embarked_attacks > 0) {
-                            attacker = unit.embarked;
-                        }
-
-                        // If attacking then get a target
-                        if (attacker) {
-                            for (int r=1; r <= attacker.range; r++) {
-                                if (row[i-r]) {
-                                    target_unit = row[i-r];
-                                    break;
-                                }
-                                else if (i - r == 0) {
-                                    target_player = players[turn ? 1 : 0];
-                                    break;
-                                }
+                    unit.reset_tickers();
+                    int[] target_loc = unit.get_target();
+                    int[] move_loc = unit.get_move();
+                    while (target_loc != null || move_loc != null) {
+                        if (target_loc != null) {
+                            Unit target = board[target_loc[0]][target_loc[1]];
+                            if (target) {
+                                unit.attack_unit(target);
                             }
+                            unit.attack_player(players[unit.allegiance ? 1 : 0]);
                         }
-
-                        // If found target unit then attack
-                        if (target_unit) {
-                            // Insert code for attacking
-                            if (attacker == unit) {
-                                attacks -= 1;
-                            }
-                            else {
-                                embarked_attacks -= 1;
-                            }
+                        else {
+                            unit.move(move_loc);
                         }
-
-                        // If found target player then attack
-                        if (target_player) {
-                            // Insert code for attacking
-                            if (attacker == unit) {
-                                attacks -= 1;
-                            }
-                            else {
-                                embarked_attacks -= 1;
-                            }
-                        }
-
-                        // Otherwise move if able
-                        else if (moves > 0) {
-                            // Insert code for moving
-                            // dont move into enemy spawn zone
-                            moves -= 1;
-                        }
-
+                        target_loc = unit.get_target();
+                        move_loc = unit.get_move();
                     }
                 }
             }
         }
-
-        if (turn) {
-            reverse_board();
-        }
     }
-    */
 }

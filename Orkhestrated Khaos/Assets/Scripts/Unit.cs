@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System;
 
 /*
 Unit.cs
@@ -15,6 +16,22 @@ Properties:
 /* To-do: 
     - Add comments to document variables below:
     - Support for neutral units (tentative)
+*/
+
+/*
+funni ideas
+units that break initiative / attack on enemy turns (idk how we would do this) (maybe with some sort of initiative order list + events) (habb yzo waits for no one)
+unorthodox targetting
+unorthodox movement
+unorthodox tickers (soul harvesting)
+only 10 dwarves left (all named)
+jonah colins -> rat killer
+voltron units
+Mace Onn
+abdullah's pins
+python comments
+portal masta
+unit that leaves a clone of itself as it moves
 */
 
 public class Unit : MonoBehaviour
@@ -38,7 +55,11 @@ public class Unit : MonoBehaviour
     public int cost; 
     public int upkeep;
     public int loyalty; 
-    public bool allegiance; 
+    public bool allegiance;
+
+    // Tickers
+    public int moves_remaining;
+    public int attacks_remaining;
     
     // Unity properties
     public BoxCollider2D box_collider;
@@ -319,10 +340,57 @@ public class Unit : MonoBehaviour
             //shove me in the battlefield layer
             sorting_group.sortingLayerName = "Battlefield";
         }
-        //ADD EMBARK *********************************
+        //ADD EMBARK
 
     }
+    
+    public int[] get_target() {
+        if (attacks_remaining > 0) {
+            int reverse = allegiance ? 1 : -1;
+            for (int r=1; r <= range; r++) {
+                r *= reverse;
+                if (game.board[board_loc[0]][board_loc[1] + r] || board_loc[1] + r == 6 * (reverse + 1) / 2) {
+                    return new int[2]{board_loc[0], board_loc[1] + r};
+                }
+            }
+        }
+        return null;
+    }
 
+    public void attack_unit(Unit target) {
+        target.set_health(target.health - power);
+    }
+
+    public void attack_player(Player player) {
+        player.set_health(player.health - power);
+    }
+
+    public int[] get_move() {
+        int reverse = allegiance ? 1 : -1;
+        for (int m=1; m <= moves_remaining; m++) {
+            m *= reverse;
+            if (!(game.board[board_loc[0]][board_loc[1] + m] || board_loc[1] + m == 6 * (reverse + 1) / 2)) {
+                return new int[2]{board_loc[0], board_loc[1] + m};
+            }
+        }
+        return null;
+    }
+
+    public void move(int[] pos) {
+        moves_remaining -= Math.Abs(pos[1] - board_loc[1]);
+
+        game.board[pos[0]][pos[1]] = this;
+        game.board[board_loc[0]][board_loc[1]] = null;
+
+        set_position(pos);
+    }
+
+    public void reset_tickers() {
+        moves_remaining = speed;
+        attacks_remaining = attacks;
+    }
+
+    //CHANGE THIS FOR INTERPOLATION (ACCOMODATE INTERMEDIATE SCALES)
     public void set_position(int[] pos) {
         //set card to corresponding scale
         transform.localScale = new Vector3(game.row_scales[pos[0]], game.row_scales[pos[0]], 1f);

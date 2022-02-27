@@ -13,6 +13,13 @@ public class Player : MonoBehaviour
         new DeckListEntry("Ork", ""),
         new DeckListEntry("Ork", "")
     };
+
+    public int max_health = 20;
+
+    public int health;
+
+    public Bar bar;
+
     
     /* RANDOM CODE I WANTED TO HANG ON TO
     var blockLookup = new Dictionary<string, Func<IBlock>>();
@@ -27,13 +34,18 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        set_health(max_health);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void set_health(int val) {
+        health = val;
+        bar.set_value(max_health, health);
     }
 }
 
