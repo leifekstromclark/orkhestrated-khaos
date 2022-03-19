@@ -107,7 +107,7 @@ public class Unit : MonoBehaviour
             drag();
         }
         //if drag is triggered
-        if (pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
+        if (game.accepting_input && game.turn == allegiance && pressed && !is_dragging && (Input.mousePosition - drag_start).magnitude > drag_tolerance) {
             begin_drag(); 
         }
         //if left mouse is down and over my collider
@@ -115,7 +115,7 @@ public class Unit : MonoBehaviour
             mouse_down();
         }
         // if left mouse is up and over my collider
-        if (Input.GetMouseButtonUp(0) && (box_collider.OverlapPoint(game.mouse_position) || is_dragging)) {
+        if (Input.GetMouseButtonUp(0) && pressed) {
             mouse_up();
         }
     }
@@ -349,7 +349,7 @@ public class Unit : MonoBehaviour
             int reverse = allegiance ? 1 : -1;
             for (int r=1; r <= range; r++) {
                 r *= reverse;
-                if (game.board[board_loc[0]][board_loc[1] + r] || board_loc[1] + r == 6 * (reverse + 1) / 2) {
+                if ((game.board[board_loc[0]][board_loc[1] + r] && game.board[board_loc[0]][board_loc[1] + r].allegiance != allegiance) || board_loc[1] + r == 6 * (reverse + 1) / 2) {
                     return new int[2]{board_loc[0], board_loc[1] + r};
                 }
             }
@@ -384,10 +384,10 @@ public class Unit : MonoBehaviour
     public void move(int[] pos) {
         moves_remaining -= Math.Abs(pos[1] - board_loc[1]);
 
-        board_loc = pos;
-
         game.board[pos[0]][pos[1]] = this;
         game.board[board_loc[0]][board_loc[1]] = null;
+
+        board_loc = pos;
 
         set_position(pos);
     }

@@ -43,6 +43,8 @@ public class Game : MonoBehaviour
 
     public bool turn = true;
 
+    public bool accepting_input = true;
+
     public string[][][] valid_locations;
 
     //THIS IS HERE FOR NOW THOUGH I MAY MOVE IT
