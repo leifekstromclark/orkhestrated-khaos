@@ -75,13 +75,15 @@ MonoBehaviour:
   game: {fileID: 0}
   power: 2
   health: 4
-  speed: 0
-  range: 0
-  attacks: 0
+  speed: 2
+  range: 1
+  attacks: 1
   cost: 0
   upkeep: 0
   loyalty: 0
   allegiance: 0
+  moves_remaining: 0
+  attacks_remaining: 0
   box_collider: {fileID: 0}
   in_play: 0
   board_loc: 

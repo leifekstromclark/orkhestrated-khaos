@@ -358,10 +358,12 @@ public class Unit : MonoBehaviour
     }
 
     public void attack_unit(Unit target) {
+        attacks_remaining--;
         target.set_health(target.health - power);
     }
 
     public void attack_player(Player player) {
+        attacks_remaining--;
         player.set_health(player.health - power);
     }
 
@@ -369,7 +371,10 @@ public class Unit : MonoBehaviour
         int reverse = allegiance ? 1 : -1;
         for (int m=1; m <= moves_remaining; m++) {
             m *= reverse;
-            if (!(game.board[board_loc[0]][board_loc[1] + m] || board_loc[1] + m == 6 * (reverse + 1) / 2)) {
+            if (board_loc[1] + m == 6 * (reverse + 1) / 2) {
+                break;
+            }
+            if (!game.board[board_loc[0]][board_loc[1] + m]) {
                 return new int[2]{board_loc[0], board_loc[1] + m};
             }
         }
@@ -378,6 +383,8 @@ public class Unit : MonoBehaviour
 
     public void move(int[] pos) {
         moves_remaining -= Math.Abs(pos[1] - board_loc[1]);
+
+        board_loc = pos;
 
         game.board[pos[0]][pos[1]] = this;
         game.board[board_loc[0]][board_loc[1]] = null;

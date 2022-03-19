@@ -35,6 +35,8 @@ public class Game : MonoBehaviour
         new Selector[7]
     };
 
+    public List<Unit> initiative;
+
     public Player[] players = new Player[2];
 
     public PolygonCollider2D poly_collider;
@@ -143,39 +145,44 @@ public class Game : MonoBehaviour
         }
     }
 
-    public void reverse_board()
+    public void pass_turn()
     {
-        foreach (Unit[] row in board) {
-            Array.Reverse(row);
-        }
+        combat();
+        turn = !turn;
     }
 
     public void combat()
     {
         //DEBUFFS AND STATUS EFFECTS SHOULD BE HANDLED IN HERE OR A SIMILAR GLOBAL LAYER + EVENT HANDLER PRLLY PLAYS SOME ROLE WITH THIS STUFF (Maybe there could be some sort of way to check debuffs or status effects from the unit class hmmm)
+        
+        initiative = new List<Unit>();
 
         for (int col = 1; col < 7; col++) {
-            for (int row = 0; row < 2; row++) {
-                Unit unit = board[row][col];
+            for (int row = 0; row < 3; row++) {
+                Unit unit = board[row][turn ? 6 - col : col];
                 if (unit && unit.allegiance == turn) {
-                    unit.reset_tickers();
-                    int[] target_loc = unit.get_target();
-                    int[] move_loc = unit.get_move();
-                    while (target_loc != null || move_loc != null) {
-                        if (target_loc != null) {
-                            Unit target = board[target_loc[0]][target_loc[1]];
-                            if (target) {
-                                unit.attack_unit(target);
-                            }
-                            unit.attack_player(players[unit.allegiance ? 1 : 0]);
-                        }
-                        else {
-                            unit.move(move_loc);
-                        }
-                        target_loc = unit.get_target();
-                        move_loc = unit.get_move();
-                    }
+                    initiative.Add(unit);
                 }
+            }
+        }
+
+        foreach (Unit unit in initiative) {
+            unit.reset_tickers();
+            int[] target_loc = unit.get_target();
+            int[] move_loc = unit.get_move();
+            while (target_loc != null || move_loc != null) {
+                if (target_loc != null) {
+                    Unit target = board[target_loc[0]][target_loc[1]];
+                    if (target) {
+                        unit.attack_unit(target);
+                    }
+                    unit.attack_player(players[unit.allegiance ? 1 : 0]);
+                }
+                else {
+                    unit.move(move_loc);
+                }
+                target_loc = unit.get_target();
+                move_loc = unit.get_move();
             }
         }
     }
