@@ -6,7 +6,7 @@ using UnityEngine;
 public class Hand : MonoBehaviour
 {
     public Game game;
-    public List<Unit> units = new List<Unit>();
+    public List<Unit> units;
     public float spacing;
     public int to_insert;
     public BoxCollider2D box_collider;

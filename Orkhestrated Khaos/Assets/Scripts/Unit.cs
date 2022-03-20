@@ -68,7 +68,7 @@ public class Unit : MonoBehaviour
     private bool is_dragging;
     private int drag_tolerance = 20; // # of pixels dragged before drag starts
     
-    public bool in_play; // true -> on_board
+    public bool in_play = false; // true -> on_board
     public int[] board_loc; // 2d int -> [row, column] 
     public Hand hand;
 
@@ -76,7 +76,6 @@ public class Unit : MonoBehaviour
     void Start()
     {
         box_collider = GetComponent<BoxCollider2D>();
-        in_play = false;
         sorting_group = GetComponent<SortingGroup>();
 
         // Load health and power from resources file
@@ -86,8 +85,7 @@ public class Unit : MonoBehaviour
         power_counter.set_value(power);
 
         if (!allegiance) {
-            // to delete?
-            flip(); // flips unit
+            flip();
         }
     }
 
@@ -149,6 +147,9 @@ public class Unit : MonoBehaviour
             game.set_valid_locations(valid_locations); 
             //update my scale and layer
             transform.localScale = new Vector3(1f, 1f, 1f);
+            if (!allegiance) {
+                flip();
+            }
             //set layer to default
             sorting_group.sortingLayerName = "Default";
             //begin the drag
@@ -321,9 +322,6 @@ public class Unit : MonoBehaviour
     public void swap(int[] pos, string action) {
         if (action == "Swap") {
             Unit other = game.board[pos[0]][pos[1]];
-            //swap units
-            game.board[board_loc[0]][board_loc[1]] = other;
-            game.board[pos[0]][pos[1]] = this;
             //update other unit if there is one
             if (other != null) {
                 //keep track of location on board
@@ -331,6 +329,9 @@ public class Unit : MonoBehaviour
                 //update transform
                 other.set_position(board_loc);
             }
+            //swap units
+            game.board[board_loc[0]][board_loc[1]] = other;
+            game.board[pos[0]][pos[1]] = this;
             //keep track of location on board
             board_loc = pos;
             //update transform
@@ -346,9 +347,9 @@ public class Unit : MonoBehaviour
         if (attacks_remaining > 0) {
             int reverse = allegiance ? 1 : -1;
             for (int r=1; r <= range; r++) {
-                r *= reverse;
-                if ((game.board[board_loc[0]][board_loc[1] + r] && game.board[board_loc[0]][board_loc[1] + r].allegiance != allegiance) || board_loc[1] + r == 6 * (reverse + 1) / 2) {
-                    return new int[2]{board_loc[0], board_loc[1] + r};
+                int f_r = r * reverse;
+                if ((game.board[board_loc[0]][board_loc[1] + f_r] && game.board[board_loc[0]][board_loc[1] + f_r].allegiance != allegiance) || board_loc[1] + f_r == 6 * (reverse + 1) / 2) {
+                    return new int[2]{board_loc[0], board_loc[1] + f_r};
                 }
             }
         }
@@ -368,12 +369,13 @@ public class Unit : MonoBehaviour
     public int[] get_move() {
         int reverse = allegiance ? 1 : -1;
         for (int m=1; m <= moves_remaining; m++) {
-            m *= reverse;
-            if (board_loc[1] + m == 6 * (reverse + 1) / 2) {
+            int f_m = m * reverse;
+            Unit target = game.board[board_loc[0]][board_loc[1] + f_m];
+            if (board_loc[1] + f_m == 6 * (reverse + 1) / 2 || (target && target.allegiance != allegiance)) {
                 break;
             }
-            if (!game.board[board_loc[0]][board_loc[1] + m]) {
-                return new int[2]{board_loc[0], board_loc[1] + m};
+            if (!target) {
+                return new int[2]{board_loc[0], board_loc[1] + f_m};
             }
         }
         return null;
@@ -399,6 +401,9 @@ public class Unit : MonoBehaviour
     public void set_position(int[] pos) {
         //set card to corresponding scale
         transform.localScale = new Vector3(game.row_scales[pos[0]], game.row_scales[pos[0]], 1f);
+        if (!allegiance) {
+            flip();
+        }
         //move card to corresponding position
         transform.position = game.board_positions[pos[0]][pos[1]];
     }

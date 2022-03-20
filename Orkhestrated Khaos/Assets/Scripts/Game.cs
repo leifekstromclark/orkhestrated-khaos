@@ -57,6 +57,17 @@ public class Game : MonoBehaviour
     {
         poly_collider = GetComponent<PolygonCollider2D>();
         setup_board();
+
+        for (int i = 0; i < 4; i++) {
+            draw_card(true);
+            draw_card(false);
+        }
+
+        hand.units = players[0].hand;
+
+        foreach (Unit unit in players[1].hand) {
+            unit.gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame
@@ -149,6 +160,7 @@ public class Game : MonoBehaviour
         }
     }
 
+    //FIX INDEX ERRORS WHEN DRAWING
     public void draw_card(bool allegiance)
     {
         Player player = players[allegiance ? 0 : 1];
@@ -166,6 +178,14 @@ public class Game : MonoBehaviour
     {
         combat();
         turn = !turn;
+        foreach (Unit unit in hand.units) {
+            unit.gameObject.SetActive(false);
+        }
+        hand.units = players[turn ? 0 : 1].hand;
+        foreach (Unit unit in hand.units) {
+            unit.gameObject.SetActive(true);
+        }
+        draw_card(turn);
     }
 
     public void combat()
@@ -193,7 +213,10 @@ public class Game : MonoBehaviour
                     if (target) {
                         unit.attack_unit(target);
                     }
-                    unit.attack_player(players[unit.allegiance ? 1 : 0]);
+                    else if (target_loc[1] == (unit.allegiance ? 6 : 0)) {
+                        unit.attack_player(players[unit.allegiance ? 1 : 0]);
+                    }
+                    //not sure what happens in edge cases but we will prlly have to account for them
                 }
                 else {
                     unit.move(move_loc);
