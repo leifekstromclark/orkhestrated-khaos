@@ -762,8 +762,10 @@ MonoBehaviour:
   players:
   - {fileID: 1995358071}
   - {fileID: 1791652699}
+  hand: {fileID: 1652089390}
   poly_collider: {fileID: 0}
   turn: 1
+  accepting_input: 1
   mouse_position: {x: 0, y: 0, z: 0}
 --- !u!60 &1330374839
 PolygonCollider2D:
@@ -883,7 +885,6 @@ GameObject:
   - component: {fileID: 1652089387}
   - component: {fileID: 1652089389}
   - component: {fileID: 1652089390}
-  - component: {fileID: 1652089391}
   m_Layer: 0
   m_Name: Hand
   m_TagString: Untagged
@@ -1000,18 +1001,6 @@ MonoBehaviour:
   to_insert: -1
   box_collider: {fileID: 0}
   player: {fileID: 1995358071}
---- !u!225 &1652089391
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1652089386}
-  m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 0
-  m_IgnoreParentGroups: 0
 --- !u!1 &1791652698
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,6 +1031,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deck: 0000000001000000020000000300000004000000
+  hand: []
   max_health: 20
   health: 0
   bar: {fileID: 2122171161}
@@ -1114,6 +1104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deck: 0000000001000000020000000300000004000000
+  hand: []
   max_health: 20
   health: 0
   bar: {fileID: 1904379212}

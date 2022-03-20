@@ -85,8 +85,6 @@ public class Unit : MonoBehaviour
         health_counter.set_value(health);
         power_counter.set_value(power);
 
-        allegiance = true;
-
         if (!allegiance) {
             // to delete?
             flip(); // flips unit
@@ -143,7 +141,7 @@ public class Unit : MonoBehaviour
             valid_locations = get_placement_locations();
             if (valid_locations != null) {
                 //remove card from hand list
-                hand.units.Remove(this);
+                game.players[allegiance ? 0 : 1].hand.Remove(this);
             }
         }
         if (valid_locations != null) {
@@ -186,7 +184,7 @@ public class Unit : MonoBehaviour
         //if not in play (playing from hand) and moused over hand
         if (!in_play && hand.box_collider.OverlapPoint(game.mouse_position)) {
             //insert card into hand
-            hand.units.Insert(hand.to_insert, this);
+            game.players[allegiance ? 0 : 1].hand.Insert(hand.to_insert, this);
             success = true;
         }
         //if moused over board
@@ -220,7 +218,7 @@ public class Unit : MonoBehaviour
             }
             else {
                 //append card to end of hand
-                hand.units.Add(this);
+                game.players[allegiance ? 0 : 1].hand.Add(this);
             }
         }
 

@@ -39,6 +39,8 @@ public class Game : MonoBehaviour
 
     public Player[] players = new Player[2];
 
+    public Hand hand;
+
     public PolygonCollider2D poly_collider;
 
     public bool turn = true;
@@ -145,6 +147,19 @@ public class Game : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void draw_card(bool allegiance)
+    {
+        Player player = players[allegiance ? 0 : 1];
+        int rand = UnityEngine.Random.Range(0, player.deck.Count);
+        int index = player.deck[rand];
+        Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
+        unit.allegiance = allegiance;
+        unit.game = this;
+        unit.hand = hand;
+        player.hand.Add(unit);
+        player.deck.RemoveAt(rand);
     }
 
     public void pass_turn()

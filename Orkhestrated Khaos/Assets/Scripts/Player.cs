@@ -14,6 +14,8 @@ public class Player : MonoBehaviour
         new DeckListEntry("Ork", "")
     };
 
+    public List<Unit> hand = new List<Unit>();
+
     public int max_health = 20;
 
     public int health;

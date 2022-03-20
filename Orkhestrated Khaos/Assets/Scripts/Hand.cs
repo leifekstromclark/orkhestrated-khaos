@@ -16,12 +16,6 @@ public class Hand : MonoBehaviour
     void Start()
     {
         box_collider = GetComponent<BoxCollider2D>();
-
-        //TESTING
-        draw_card();
-        draw_card();
-        draw_card();
-        draw_card();
     }
 
     // Update is called once per frame
@@ -66,16 +60,5 @@ public class Hand : MonoBehaviour
             }
             units[i].gameObject.transform.position = transform.position + new Vector3(spacing * (i + skip) - ((float)hand_length - 1) * spacing / 2, -1, 0);
         }
-    }
-
-    public void draw_card()
-    {
-        int rand = UnityEngine.Random.Range(0, player.deck.Count);
-        int index = player.deck[rand];
-        Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
-        unit.game = game;
-        unit.hand = this;
-        units.Add(unit);
-        player.deck.RemoveAt(rand);
     }
 }
