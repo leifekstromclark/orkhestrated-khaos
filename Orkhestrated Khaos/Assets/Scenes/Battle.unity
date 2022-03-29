@@ -1132,7 +1132,10 @@ MonoBehaviour:
   hand: []
   max_health: 20
   health: 0
+  supply: 0
+  upkeep: 0
   bar: {fileID: 2122171161}
+  supply_bar: {fileID: 1784320483}
 --- !u!4 &1791652700
 Transform:
   m_ObjectHideFlags: 0
@@ -1205,7 +1208,10 @@ MonoBehaviour:
   hand: []
   max_health: 20
   health: 0
+  supply: 0
+  upkeep: 0
   bar: {fileID: 1904379212}
+  supply_bar: {fileID: 1612394857}
 --- !u!114 &2122171161 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5444768567455809086, guid: bd76db783960354428ececfd6d6c3a8d, type: 3}

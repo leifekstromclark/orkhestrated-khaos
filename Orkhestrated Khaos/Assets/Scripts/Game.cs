@@ -35,6 +35,8 @@ public class Game : MonoBehaviour
         new Selector[7]
     };
 
+    public int supply_cap = 10;
+
     public List<Unit> initiative;
 
     public Player[] players = new Player[2];
@@ -61,6 +63,11 @@ public class Game : MonoBehaviour
         for (int i = 0; i < 4; i++) {
             draw_card(true);
             draw_card(false);
+        }
+
+        foreach (Player player in players) {
+            player.supply_bar.instantiate_supplies(supply_cap);
+            player.set_supply(2);
         }
 
         hand.units = players[0].hand;
@@ -177,6 +184,8 @@ public class Game : MonoBehaviour
     public void pass_turn()
     {
         combat();
+        Player player = players[turn ? 0 : 1];
+        player.set_supply(Math.Min(player.supply += 2, supply_cap));
         turn = !turn;
         foreach (Unit unit in hand.units) {
             unit.gameObject.SetActive(false);
@@ -186,6 +195,7 @@ public class Game : MonoBehaviour
             unit.gameObject.SetActive(true);
         }
         draw_card(turn);
+
     }
 
     public void combat()

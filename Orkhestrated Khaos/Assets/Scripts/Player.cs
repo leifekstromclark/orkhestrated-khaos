@@ -20,7 +20,13 @@ public class Player : MonoBehaviour
 
     public int health;
 
+    public int supply;
+
+    public int upkeep;
+
     public Bar bar;
+
+    public SupplyBar supply_bar;
 
     
     /* RANDOM CODE I WANTED TO HANG ON TO
@@ -48,6 +54,16 @@ public class Player : MonoBehaviour
     public void set_health(int val) {
         health = val;
         bar.set_value(max_health, health);
+    }
+
+    public void set_supply(int val) {
+        supply = val;
+        supply_bar.set_value(supply, upkeep);
+    }
+
+    public void set_upkeep(int val) {
+        upkeep = val;
+        supply_bar.set_value(supply, upkeep);
     }
 }
 
