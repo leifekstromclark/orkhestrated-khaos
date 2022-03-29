@@ -28,11 +28,15 @@ public class SupplyBar : MonoBehaviour
         }
     }
 
-    public void set_value(int supply, int upkeep) {
+    public void set_value(int supply, int upkeep, int current) {
         for (int i = 0; i < supplies.Length; i++) {
-            if (i < supply - upkeep) {
+            if (i < current) {
                 supplies[i].gameObject.SetActive(true);
                 supplies[i].color = Color.magenta;
+            }
+            else if (i < supply - upkeep) {
+                supplies[i].gameObject.SetActive(true);
+                supplies[i].color = Color.black;
             }
             else if (i < supply) {
                 supplies[i].gameObject.SetActive(true);

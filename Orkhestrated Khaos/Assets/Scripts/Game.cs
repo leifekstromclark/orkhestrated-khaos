@@ -67,7 +67,7 @@ public class Game : MonoBehaviour
 
         foreach (Player player in players) {
             player.supply_bar.instantiate_supplies(supply_cap);
-            player.set_supply(2);
+            player.set_supply(2, 0, 2);
         }
 
         hand.units = players[0].hand;
@@ -185,7 +185,7 @@ public class Game : MonoBehaviour
     {
         combat();
         Player player = players[turn ? 0 : 1];
-        player.set_supply(Math.Min(player.supply += 2, supply_cap));
+        player.set_supply(Math.Min(player.supply += 2, supply_cap), player.upkeep, player.supply - player.upkeep);
         turn = !turn;
         foreach (Unit unit in hand.units) {
             unit.gameObject.SetActive(false);

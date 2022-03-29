@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
 
     public int upkeep;
 
+    public int current_supply;
+
     public Bar bar;
 
     public SupplyBar supply_bar;
@@ -56,14 +58,11 @@ public class Player : MonoBehaviour
         bar.set_value(max_health, health);
     }
 
-    public void set_supply(int val) {
-        supply = val;
-        supply_bar.set_value(supply, upkeep);
-    }
-
-    public void set_upkeep(int val) {
-        upkeep = val;
-        supply_bar.set_value(supply, upkeep);
+    public void set_supply(int supply, int upkeep, int current) {
+        this.current_supply = current;
+        this.supply = supply;
+        this.upkeep = upkeep;
+        supply_bar.set_value(this.supply, this.upkeep, this.current_supply);
     }
 }
 

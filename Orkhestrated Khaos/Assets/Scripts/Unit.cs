@@ -134,7 +134,7 @@ public class Unit : MonoBehaviour
             valid_locations = get_swap_locations();
         }
         //if card is in hand (playing card)
-        else if (game.players[allegiance ? 0 : 1].supply - game.players[allegiance ? 0 : 1].upkeep >= cost) {
+        else if (game.players[allegiance ? 0 : 1].current_supply >= cost) {
             //get some valid placement locations for the board
             valid_locations = get_placement_locations();
             if (valid_locations != null) {
@@ -282,7 +282,7 @@ public class Unit : MonoBehaviour
         if (action == "Place") {
             //increment upkeep
             Player player = game.players[allegiance ? 0 : 1];
-            player.set_upkeep(player.upkeep + upkeep);
+            player.set_supply(player.supply, player.upkeep + upkeep, player.current_supply - cost);
             //insert card into board
             game.board[pos[0]][pos[1]] = this;
             //keep track of location on board
