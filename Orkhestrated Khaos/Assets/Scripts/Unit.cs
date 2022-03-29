@@ -126,7 +126,7 @@ public class Unit : MonoBehaviour
 
     //called when a drag input is detected
     public void begin_drag() {
-        string[][][] valid_locations;
+        string[][][] valid_locations = null;
 
         //if card is on board (swapping lanes)
         if (in_play) {
@@ -134,7 +134,7 @@ public class Unit : MonoBehaviour
             valid_locations = get_swap_locations();
         }
         //if card is in hand (playing card)
-        else {
+        else if (game.players[allegiance ? 0 : 1].supply - game.players[allegiance ? 0 : 1].upkeep >= cost) {
             //get some valid placement locations for the board
             valid_locations = get_placement_locations();
             if (valid_locations != null) {
@@ -280,6 +280,9 @@ public class Unit : MonoBehaviour
 
     public void place(int[] pos, string action) {
         if (action == "Place") {
+            //increment upkeep
+            Player player = game.players[allegiance ? 0 : 1];
+            player.set_upkeep(player.upkeep + upkeep);
             //insert card into board
             game.board[pos[0]][pos[1]] = this;
             //keep track of location on board

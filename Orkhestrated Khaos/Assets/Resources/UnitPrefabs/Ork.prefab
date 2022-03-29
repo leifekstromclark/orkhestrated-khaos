@@ -78,8 +78,8 @@ MonoBehaviour:
   speed: 2
   range: 1
   attacks: 1
-  cost: 0
-  upkeep: 0
+  cost: 2
+  upkeep: 2
   loyalty: 0
   allegiance: 0
   moves_remaining: 0
