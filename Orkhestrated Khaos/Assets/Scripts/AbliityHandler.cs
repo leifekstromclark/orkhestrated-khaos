@@ -5,21 +5,22 @@ using UnityEngine;
 public class AbilityHandler
 {
 
-    private Dictionary<string, List<Unit>> subscribed = new Dictionary<string, List<Unit>>()
+    private Dictionary<string, List<ReceivesEvents>> subscribed = new Dictionary<string, List<ReceivesEvents>>()
     {
-        {"done", new List<Unit>()},
-        {"move", new List<Unit>()},
-        {"attack", new List<Unit>()}
+        {"done", new List<ReceivesEvents>()},
+        {"move", new List<ReceivesEvents>()},
+        {"attack", new List<ReceivesEvents>()}
     };
 
-    public void subscribe(string type, Unit subscriber)
+    public void subscribe(string type, ReceivesEvents subscriber)
     {
         subscribed[type].Add(subscriber);
     }
 
-    public void trigger(string type, Event data) {
-        foreach (Unit subscriber in subscribed[type]) {
-            subscriber.receive_event(data);
+    public Event trigger(string type, Event data) {
+        foreach (ReceivesEvents subscriber in subscribed[type]) {
+            data = subscriber.receive_event(data);
         }
+        return data;
     }
 }

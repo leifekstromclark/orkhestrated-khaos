@@ -32,9 +32,11 @@ abdullah's pins
 python comments
 portal masta
 unit that leaves a clone of itself as it moves
+treshtog
+pirate expansion
 */
 
-public class Unit : MonoBehaviour
+public class Unit : MonoBehaviour, ReceivesEvents
 {
 
     private Counter health_counter;
@@ -244,8 +246,8 @@ public class Unit : MonoBehaviour
         hand.to_insert = -1;
     }
 
-    public void receive_event(Event data) {
-        
+    public Event receive_event(Event data) {
+        return data;
     }
     
     //gets valid placement (playing out of hand) locations on the board
@@ -271,6 +273,10 @@ public class Unit : MonoBehaviour
                 valid_locations[row][col] = new string[1]{"Place"};
                 empty = false;
             }
+            else if (game.board[row][col] is Vehicle && !(game.board[row][col] as Vehicle).embarked) {
+                valid_locations[row][col] = new string[2]{"Place", "Embark"};
+                empty = false;
+            }
         }
         if (empty) {
             valid_locations = null;
@@ -279,10 +285,11 @@ public class Unit : MonoBehaviour
     }
 
     public void place(int[] pos, string action) {
+        //increment upkeep
+        Player player = game.players[allegiance ? 0 : 1];
+        player.set_supply(player.supply, player.upkeep + upkeep, player.current_supply - cost);
+
         if (action == "Place") {
-            //increment upkeep
-            Player player = game.players[allegiance ? 0 : 1];
-            player.set_supply(player.supply, player.upkeep + upkeep, player.current_supply - cost);
             //insert card into board
             game.board[pos[0]][pos[1]] = this;
             //keep track of location on board
@@ -294,7 +301,9 @@ public class Unit : MonoBehaviour
             //shove me in the battlefield layer
             sorting_group.sortingLayerName = "Battlefield";
         }
-        //ADD EMBARK
+        if (action == "Embark") {
+
+        }
     }
 
     public string[][][] get_swap_locations() {
@@ -306,12 +315,17 @@ public class Unit : MonoBehaviour
         };
 
         bool empty = true;
-        // If:      middle row in column is empty             or contains allied unit
+        // If middle row in column is empty or contains allied unit
         if (!game.board[1][board_loc[1]] || game.board[1][board_loc[1]].allegiance == allegiance) {
             //check if each space in the column is valid
             for (int row = 0; row < 3; row++) {
                 if (row != board_loc[0] && (!game.board[row][board_loc[1]] || game.board[row][board_loc[1]].allegiance == allegiance)) {
-                    valid_locations[row][board_loc[1]] = new string[1]{"Swap"};
+                    if (game.board[row][board_loc[1]] is Vehicle && !(game.board[row][board_loc[1]] as Vehicle).embarked) {
+                        valid_locations[row][board_loc[1]] = new string[2]{"Swap", "Embark"};
+                    }
+                    else {
+                        valid_locations[row][board_loc[1]] = new string[1]{"Swap"};
+                    }
                     empty = false;
                 }
             }
@@ -342,8 +356,9 @@ public class Unit : MonoBehaviour
             //shove me in the battlefield layer
             sorting_group.sortingLayerName = "Battlefield";
         }
-        //ADD EMBARK
+        if (action == "Embark") {
 
+        }
     }
     
     public int[] get_target() {
@@ -414,6 +429,11 @@ public class Unit : MonoBehaviour
     public void set_health(int val) {
         health = val;
         health_counter.set_value(val); // Updates counter
+        if (health <= 0) {
+            game.board[board_loc[0]][board_loc[1]] = null;
+            game.players[allegiance ? 0 : 1].upkeep -= upkeep;
+            Destroy(gameObject);
+        }
     }
 
     public void set_power(int val) {

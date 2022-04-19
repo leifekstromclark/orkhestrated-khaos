@@ -185,17 +185,21 @@ public class Game : MonoBehaviour
     {
         combat();
         Player player = players[turn ? 0 : 1];
-        player.set_supply(Math.Min(player.supply += 2, supply_cap), player.upkeep, player.supply - player.upkeep);
+        int new_supply = Math.Min(player.supply + 2, supply_cap);
+        player.set_supply(new_supply, player.upkeep, new_supply - player.upkeep);
+
         turn = !turn;
         foreach (Unit unit in hand.units) {
             unit.gameObject.SetActive(false);
         }
-        hand.units = players[turn ? 0 : 1].hand;
+
+        player = players[turn ? 0 : 1];
+        player.set_supply(player.supply, player.upkeep, player.supply - player.upkeep);
+        hand.units = player.hand;
         foreach (Unit unit in hand.units) {
             unit.gameObject.SetActive(true);
         }
         draw_card(turn);
-
     }
 
     public void combat()
