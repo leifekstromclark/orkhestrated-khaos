@@ -58,6 +58,7 @@ public class Unit : MonoBehaviour, ReceivesEvents
     public int upkeep;
     public int loyalty; 
     public bool allegiance;
+    public List<Buff> buffs = new List<Buff>();
 
     // Tickers
     public int moves_remaining;
