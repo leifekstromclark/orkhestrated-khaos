@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Buff : MonoBehaviour, ReceivesEvents
+public class Buff : MonoBehaviour
 {
+
+    public Unit host;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -16,7 +19,7 @@ public class Buff : MonoBehaviour, ReceivesEvents
         
     }
 
-    public void receive_event(Event data) {
-        
+    public void expunge() {
+        // REMOVE THE DEBUFF FROM GAME, UNIT, AND EVENT HANDLER
     }
 }
