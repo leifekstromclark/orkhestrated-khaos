@@ -38,6 +38,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 4019573187
+    locked: 0
+  - name: Battlefield
+    uniqueID: 4019785817
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
