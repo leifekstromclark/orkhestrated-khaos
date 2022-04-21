@@ -7,14 +7,20 @@ public class AbilityHandler
 
     private Dictionary<string, List<ReceivesEvents>> subscribed = new Dictionary<string, List<ReceivesEvents>>()
     {
-        {"done", new List<ReceivesEvents>()},
-        {"move", new List<ReceivesEvents>()},
-        {"attack", new List<ReceivesEvents>()}
+        {"Done", new List<ReceivesEvents>()},
+        {"Move", new List<ReceivesEvents>()},
+        {"Attack", new List<ReceivesEvents>()},
+        {"GetSwap", new List<ReceivesEvents>()},
+        {"Turn", new List<ReceivesEvents>()}
     };
 
-    public void subscribe(string type, ReceivesEvents subscriber)
+    public void add_subscriber(string type, ReceivesEvents subscriber)
     {
         subscribed[type].Add(subscriber);
+    }
+
+    public void remove_subscriber(string type, ReceivesEvents subscriber) {
+        subscribed[type].Remove(subscriber);
     }
 
     public Event trigger(string type, Event data) {

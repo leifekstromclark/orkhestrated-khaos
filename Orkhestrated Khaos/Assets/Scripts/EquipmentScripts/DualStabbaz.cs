@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Equipment : MonoBehaviour
+public class DualStabbaz : Equipment
 {
-
-    public Unit host;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -17,5 +14,13 @@ public class Equipment : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void equip(Unit host) {
+        this.host = host;
+        this.host.attacks += 1;
+        this.host.speed += 2;
+        this.host.health += 2;
+        this.host.max_health += 2;
     }
 }

@@ -36,7 +36,7 @@ treshtog
 pirate expansion
 */
 
-public class Unit : MonoBehaviour, ReceivesEvents
+public class Unit : MonoBehaviour
 {
 
     private Counter health_counter;
@@ -51,6 +51,7 @@ public class Unit : MonoBehaviour, ReceivesEvents
     // Unit stats
     public int power;
     public int health;
+    public int max_health;
     public int speed; // Squares/turn
     public int range; 
     public int attacks; // attacks/turn
@@ -245,10 +246,6 @@ public class Unit : MonoBehaviour, ReceivesEvents
         is_dragging = false;
         pressed = false;
         hand.to_insert = -1;
-    }
-
-    public Event receive_event(Event data) {
-        return data;
     }
     
     //gets valid placement (playing out of hand) locations on the board

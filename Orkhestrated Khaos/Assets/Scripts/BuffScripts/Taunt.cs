@@ -5,7 +5,8 @@ using UnityEngine;
 public class Taunt : Buff, ReceivesEvents
 {
 
-    private int turns_remaining;
+    public int turns_remaining;
+    private AbilityHandler handler;
     
     // Start is called before the first frame update
     void Start()
@@ -17,6 +18,17 @@ public class Taunt : Buff, ReceivesEvents
     void Update()
     {
         
+    }
+
+    public void subscribe(AbilityHandler handler) {
+        this.handler = handler;
+        this.handler.add_subscriber("GetSwap", this);
+        this.handler.add_subscriber("Turn", this);
+    }
+
+    public void unsubscribe() {
+        handler.remove_subscriber("GetSwap", this);
+        handler.remove_subscriber("Turn", this);
     }
 
     public Event receive_event(Event data) {

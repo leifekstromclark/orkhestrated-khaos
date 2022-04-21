@@ -1,6 +1,6 @@
 public class Move : Event
 {
-    private Unit unit;
+    public Unit unit;
 
     public Move(Unit unit)
     {

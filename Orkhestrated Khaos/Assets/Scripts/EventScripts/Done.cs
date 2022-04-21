@@ -1,6 +1,6 @@
 public class Done : Event
 {
-    private Unit unit;
+    public Unit unit;
 
     public Done(Unit unit)
     {
