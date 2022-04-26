@@ -5,14 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
-    public List<int> deck = new List<int>();
-    public List<DeckListEntry> deck_list = new List<DeckListEntry>() {
-        new DeckListEntry("Ork", ""),
-        new DeckListEntry("Ork", ""),
-        new DeckListEntry("Ork", ""),
-        new DeckListEntry("Ork", ""),
-        new DeckListEntry("Ork", "")
-    };
+    public List<int> deck;
+    public List<DeckListEntry> deck_list;
 
     public List<Unit> hand = new List<Unit>();
 
@@ -69,10 +63,10 @@ public class Player : MonoBehaviour
 public class DeckListEntry
 {
     public string creature;
-    public string weapon;
+    public string equipment;
     
-    public DeckListEntry(string creature, string weapon) {
+    public DeckListEntry(string creature, string equipment) {
         this.creature = creature;
-        this.weapon = weapon;
+        this.equipment = equipment;
     }
 }

@@ -8,20 +8,9 @@ public class VoodooBoosta : Equipment, ReceivesEvents
 
     private AbilityHandler handler;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void equip(Unit host) {
+    public override void equip(Unit host) {
         this.host = host;
+        this.host.equipment = this;
         this.host.range += 1;
         this.host.power += 1;
         this.host.health += 2;

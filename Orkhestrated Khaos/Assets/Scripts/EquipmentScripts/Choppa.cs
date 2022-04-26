@@ -7,20 +7,9 @@ public class Choppa : Equipment, ReceivesEvents
 
     private AbilityHandler handler;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void equip(Unit host) {
+    public override void equip(Unit host) {
         this.host = host;
+        this.host.equipment = this;
         this.host.speed += 1;
         this.host.power += 1;
         this.host.health += 2;
@@ -39,7 +28,7 @@ public class Choppa : Equipment, ReceivesEvents
     public Event receive_event(Event data) {
         if (data is Done) {
             if ((data as Done).unit == host) {
-                host.set_power(host.power + 2);
+                host.set_power(host.power + 1);
             }
         }
         return data;

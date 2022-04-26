@@ -7,20 +7,9 @@ public class Sticka : Equipment, ReceivesEvents
 
     private AbilityHandler handler;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void equip(Unit host) {
+    public override void equip(Unit host) {
         this.host = host;
+        this.host.equipment = this;
         this.host.speed += 1;
         this.host.health += 4;
         this.host.max_health += 4;
@@ -49,7 +38,11 @@ public class Sticka : Equipment, ReceivesEvents
                     restack.turns_remaining = 2;
                 }
                 else {
-                    //add buff to target.buffs (instantiate with proper turns remaining (and probably some gameobjects for visuals))
+                    Taunt taunt = (Instantiate(Resources.Load("BuffPrefabs/Taunt"), casted_data.target.transform) as GameObject).GetComponent<Taunt>();
+                    taunt.turns_remaining = 2;
+                    taunt.host = casted_data.target;
+                    taunt.subscribe(handler);
+                    casted_data.target.buffs.Add(taunt);
                 }
             }
         }

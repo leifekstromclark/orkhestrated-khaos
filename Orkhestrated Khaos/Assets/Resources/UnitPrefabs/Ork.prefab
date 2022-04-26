@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6524642769948696309}
   - component: {fileID: 7231076652232040687}
-  - component: {fileID: 2066627297579386648}
   - component: {fileID: 4109498533432176295}
+  - component: {fileID: 4630823933108231031}
   m_Layer: 0
   m_Name: Ork
   m_TagString: Untagged
@@ -60,7 +60,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
---- !u!114 &2066627297579386648
+--- !u!210 &4109498533432176295
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7040188596713617802}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!114 &4630823933108231031
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,30 +86,21 @@ MonoBehaviour:
   game: {fileID: 0}
   power: 2
   health: 4
-  speed: 2
+  max_health: 4
+  speed: 1
   range: 1
   attacks: 1
   cost: 2
   upkeep: 2
   loyalty: 0
   allegiance: 0
+  buffs: []
   moves_remaining: 0
   attacks_remaining: 0
   box_collider: {fileID: 0}
   in_play: 0
   board_loc: 
   hand: {fileID: 0}
---- !u!210 &4109498533432176295
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7040188596713617802}
-  m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!1 &7571342084313983210
 GameObject:
   m_ObjectHideFlags: 0

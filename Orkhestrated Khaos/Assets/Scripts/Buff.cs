@@ -19,7 +19,9 @@ public class Buff : MonoBehaviour
         
     }
 
-    public void expunge() {
+    public virtual void expunge() {
         // REMOVE THE DEBUFF FROM GAME, UNIT, AND EVENT HANDLER
+        host.buffs.Remove(this);
+        Destroy(gameObject);
     }
 }

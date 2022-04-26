@@ -7,17 +7,11 @@ public class Taunt : Buff, ReceivesEvents
 
     public int turns_remaining;
     private AbilityHandler handler;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public override void expunge() {
+        unsubscribe();
+        host.buffs.Remove(this);
+        Destroy(gameObject);
     }
 
     public void subscribe(AbilityHandler handler) {

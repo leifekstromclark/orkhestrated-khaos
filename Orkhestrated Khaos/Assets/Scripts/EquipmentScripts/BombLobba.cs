@@ -7,22 +7,9 @@ public class BombLobba : Equipment, ReceivesEvents
 
     private AbilityHandler handler;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void equip(Unit host) {
+    public override void equip(Unit host) {
         this.host = host;
-        this.host.health += 2;
-        this.host.max_health += 2;
+        this.host.equipment = this;
         this.host.range += 2;
         this.host.power += 2;
     }
@@ -56,7 +43,9 @@ public class BombLobba : Equipment, ReceivesEvents
                 }
 
                 foreach (Unit splash_target in splash_targets) {
-                    splash_target.set_health(splash_target.health - 2);
+                    if (splash_target) {
+                        splash_target.set_health(splash_target.health - 2);
+                    }
                 }
             }
         }

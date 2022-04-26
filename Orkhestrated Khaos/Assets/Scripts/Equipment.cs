@@ -18,4 +18,9 @@ public class Equipment : MonoBehaviour
     {
         
     }
+
+    public virtual void equip(Unit host) {
+        this.host = host;
+        this.host.equipment = this;
+    }
 }

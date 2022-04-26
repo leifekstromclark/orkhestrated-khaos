@@ -6,6 +6,25 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
 
+    public List<DeckListEntry> player_one_deck = new List<DeckListEntry>() {
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "VoodooBoosta")
+    };
+    public List<DeckListEntry> player_two_deck = new List<DeckListEntry>() {
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka")
+    };
+
     //THIS CLASS WILL PROBABLY GET SPLIT INTO MULTIPLE IN THE FUTURE
 
     public float projection_height = 3.01f;
@@ -43,6 +62,8 @@ public class Game : MonoBehaviour
 
     public Hand hand;
 
+    public AbilityHandler handler = new AbilityHandler();
+
     public PolygonCollider2D poly_collider;
 
     public bool turn = true;
@@ -60,14 +81,26 @@ public class Game : MonoBehaviour
         poly_collider = GetComponent<PolygonCollider2D>();
         setup_board();
 
-        for (int i = 0; i < 4; i++) {
-            draw_card(true);
-            draw_card(false);
-        }
-
         foreach (Player player in players) {
             player.supply_bar.instantiate_supplies(supply_cap);
             player.set_supply(2, 0, 2);
+        }
+
+        players[0].deck_list = player_one_deck;
+        players[1].deck_list = player_two_deck;
+
+        players[0].deck = new List<int>();
+        for (int i = 0; i < player_one_deck.Count; i++) {
+            players[0].deck.Add(i);
+        }
+        players[1].deck = new List<int>();
+        for (int i = 0; i < player_two_deck.Count; i++) {
+            players[1].deck.Add(i);
+        }
+
+        for (int i = 0; i < 4; i++) {
+            draw_card(true);
+            draw_card(false);
         }
 
         hand.units = players[0].hand;
@@ -171,14 +204,21 @@ public class Game : MonoBehaviour
     public void draw_card(bool allegiance)
     {
         Player player = players[allegiance ? 0 : 1];
-        int rand = UnityEngine.Random.Range(0, player.deck.Count);
-        int index = player.deck[rand];
-        Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
-        unit.allegiance = allegiance;
-        unit.game = this;
-        unit.hand = hand;
-        player.hand.Add(unit);
-        player.deck.RemoveAt(rand);
+        if (player.deck.Count > 0 && player.hand.Count < 6) {
+            int rand = UnityEngine.Random.Range(0, player.deck.Count);
+            int index = player.deck[rand];
+            Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
+            unit.allegiance = allegiance;
+            unit.game = this;
+            unit.hand = hand;
+            Equipment equipment = (Instantiate(Resources.Load("EquipmentPrefabs/" + player.deck_list[index].equipment), unit.transform) as GameObject).GetComponent<Equipment>();
+            equipment.equip(unit);
+            if (equipment is ReceivesEvents) {
+                (equipment as ReceivesEvents).subscribe(handler);
+            }
+            player.hand.Add(unit);
+            player.deck.RemoveAt(rand);
+        }
     }
 
     public void pass_turn()
@@ -187,7 +227,7 @@ public class Game : MonoBehaviour
         Player player = players[turn ? 0 : 1];
         int new_supply = Math.Min(player.supply + 2, supply_cap);
         player.set_supply(new_supply, player.upkeep, new_supply - player.upkeep);
-
+        handler.trigger("Turn", new Turn(turn));
         turn = !turn;
         foreach (Unit unit in hand.units) {
             unit.gameObject.SetActive(false);
@@ -238,6 +278,7 @@ public class Game : MonoBehaviour
                 target_loc = unit.get_target();
                 move_loc = unit.get_move();
             }
+            handler.trigger("Done", new Done(unit));
         }
     }
 }

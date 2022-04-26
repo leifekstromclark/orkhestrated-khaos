@@ -59,6 +59,8 @@ public class Unit : MonoBehaviour
     public int upkeep;
     public int loyalty; 
     public bool allegiance;
+
+    public Equipment equipment;
     public List<Buff> buffs = new List<Buff>();
 
     // Tickers
@@ -331,6 +333,9 @@ public class Unit : MonoBehaviour
         if (empty) {
             valid_locations = null;
         }
+
+        valid_locations = (game.handler.trigger("GetSwap", new GetSwap(this, valid_locations)) as GetSwap).locations;
+
         return valid_locations;
     }
 
@@ -373,6 +378,7 @@ public class Unit : MonoBehaviour
     }
 
     public void attack_unit(Unit target) {
+        game.handler.trigger("Attack", new Attack(this, target));
         attacks_remaining--;
         target.set_health(target.health - power);
     }
@@ -430,6 +436,17 @@ public class Unit : MonoBehaviour
         if (health <= 0) {
             game.board[board_loc[0]][board_loc[1]] = null;
             game.players[allegiance ? 0 : 1].upkeep -= upkeep;
+            if (equipment) {
+                if (equipment is ReceivesEvents) {
+                    (equipment as ReceivesEvents).unsubscribe();
+                }
+                Destroy(equipment);
+            }
+
+            while (buffs.Count > 0) {
+                buffs[0].expunge();
+            }
+            
             Destroy(gameObject);
         }
     }
