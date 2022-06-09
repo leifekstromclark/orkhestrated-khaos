@@ -30,6 +30,11 @@ public class Taunt : Buff, ReceivesEvents
             GetSwap casted_data = data as GetSwap;
             if (casted_data.unit == host) {
                 casted_data.locations = null;
+                casted_data.num_locs = 0;
+            }
+            else {
+                casted_data.locations[host.board_loc[0]][host.board_loc[1]] = null;
+                casted_data.num_locs--;
             }
             data = casted_data;
         }

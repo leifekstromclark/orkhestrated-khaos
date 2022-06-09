@@ -7,22 +7,38 @@ public class Game : MonoBehaviour
 {
 
     public List<DeckListEntry> player_one_deck = new List<DeckListEntry>() {
-        new DeckListEntry("Ork", "Sticka"),
-        new DeckListEntry("Ork", "Sticka"),
-        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Ork", "DualStabbaz"),
+        new DeckListEntry("Ork", "DualStabbaz"),
         new DeckListEntry("Ork", "VoodooBoosta"),
         new DeckListEntry("Ork", "VoodooBoosta"),
         new DeckListEntry("Ork", "VoodooBoosta"),
-        new DeckListEntry("Ork", "VoodooBoosta")
+        new DeckListEntry("Goblin", "VoodooBoosta"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Goblin", "Sticka"),
+        new DeckListEntry("Goblin", "BombLobba"),
+        new DeckListEntry("Goblin", "BombLobba")
     };
     public List<DeckListEntry> player_two_deck = new List<DeckListEntry>() {
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka"),
-        new DeckListEntry("Goblin", "Sticka")
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Ork", "Sticka"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Goblin", "DualStabbaz"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "VoodooBoosta"),
+        new DeckListEntry("Ork", "Choppa"),
+        new DeckListEntry("Ork", "Choppa"),
+        new DeckListEntry("Ork", "Choppa"),
+        new DeckListEntry("Goblin", "BombLobba"),
+        new DeckListEntry("Goblin", "BombLobba"),
+        new DeckListEntry("Goblin", "BombLobba")
     };
 
     //THIS CLASS WILL PROBABLY GET SPLIT INTO MULTIPLE IN THE FUTURE
@@ -244,20 +260,38 @@ public class Game : MonoBehaviour
 
     public void combat()
     {
-        //DEBUFFS AND STATUS EFFECTS SHOULD BE HANDLED IN HERE OR A SIMILAR GLOBAL LAYER + EVENT HANDLER PRLLY PLAYS SOME ROLE WITH THIS STUFF (Maybe there could be some sort of way to check debuffs or status effects from the unit class hmmm)
-        
-        initiative = new List<Unit>();
 
-        for (int col = 1; col < 7; col++) {
-            for (int row = 0; row < 3; row++) {
-                Unit unit = board[row][turn ? 6 - col : col];
-                if (unit && unit.allegiance == turn) {
-                    initiative.Add(unit);
+        bool finished = false;
+        foreach (Unit[] row in board) {
+            foreach (Unit unit in row) {
+                if (unit) {
+                    unit.done = false;
                 }
             }
         }
 
-        foreach (Unit unit in initiative) {
+        while (true) {
+            Unit unit = null;
+
+            for (int col = 1; col < 7; col++) {
+                if (unit) {
+                    break;
+                }
+                for (int row = 0; row < 3; row++) {
+                    Unit candidate = board[row][turn ? 6 - col : col];
+                    if (candidate && candidate.allegiance == turn && !candidate.done) {
+                        unit = candidate;
+                        break;
+                    }
+                    if (row == 2 && col == 6) {
+                        finished = true;
+                    }
+                }
+            }
+            if (finished) {
+                break;
+            }
+
             unit.reset_tickers();
             int[] target_loc = unit.get_target();
             int[] move_loc = unit.get_move();
@@ -278,6 +312,7 @@ public class Game : MonoBehaviour
                 target_loc = unit.get_target();
                 move_loc = unit.get_move();
             }
+            unit.done = true;
             handler.trigger("Done", new Done(unit));
         }
     }

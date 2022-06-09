@@ -43,7 +43,7 @@ public class BombLobba : Equipment, ReceivesEvents
                 }
 
                 foreach (Unit splash_target in splash_targets) {
-                    if (splash_target) {
+                    if (splash_target && splash_target.allegiance != host.allegiance) {
                         splash_target.set_health(splash_target.health - 2);
                     }
                 }

@@ -16,6 +16,20 @@ Properties:
 /* To-do: 
     - Add comments to document variables below:
     - Support for neutral units (tentative)
+    - action queue?
+    - event priority
+    - toggle states? goblin cannon, howitzer, low angle, unsieged
+    - blob shadows
+    - rename to IReceiveEvents
+*/
+
+/* Bugs
+card drawing is breaking
+make visuals a little nicer
+read over taunt / anything that accesses it
+read over swapping and placing
+read over scaling
+read over passing the turn (abdullah got skipped sadge)
 */
 
 /*
@@ -34,6 +48,16 @@ portal masta
 unit that leaves a clone of itself as it moves
 treshtog
 pirate expansion
+dating minigame
+ability that distracts last unit in row
+recoil knockback man
+goblin launcher
+imbalance of information mechanic
+kingpin vanessa ork
+leroy jenkins
+atco
+jorker
+attribute that saves string (some sort of dynamic keyword ability)
 */
 
 public class Unit : MonoBehaviour
@@ -44,6 +68,7 @@ public class Unit : MonoBehaviour
 
 
     private SortingGroup sorting_group;
+    private Transform flip_container;
 
     public Game game;
     // Reference to game class -> Handles turn and board properties (tentative)
@@ -53,11 +78,11 @@ public class Unit : MonoBehaviour
     public int health;
     public int max_health;
     public int speed; // Squares/turn
-    public int range; 
+    public int range;
     public int attacks; // attacks/turn
-    public int cost; 
+    public int cost;
     public int upkeep;
-    public int loyalty; 
+    //public int loyalty;
     public bool allegiance;
 
     public Equipment equipment;
@@ -75,8 +100,9 @@ public class Unit : MonoBehaviour
     private int drag_tolerance = 20; // # of pixels dragged before drag starts
     
     public bool in_play = false; // true -> on_board
-    public int[] board_loc; // 2d int -> [row, column] 
+    public int[] board_loc; // 2d int -> [row, column]
     public Hand hand;
+    public bool done = false;
 
     // Start is called before the first frame update
     void Start()
@@ -84,9 +110,11 @@ public class Unit : MonoBehaviour
         box_collider = GetComponent<BoxCollider2D>();
         sorting_group = GetComponent<SortingGroup>();
 
+        flip_container = transform.Find("Flip");
+
         // Load health and power from resources file
-        health_counter = (Instantiate(Resources.Load("Health"), transform) as GameObject).GetComponent<Counter>();
-        power_counter = (Instantiate(Resources.Load("Power"), transform) as GameObject).GetComponent<Counter>();
+        health_counter = (Instantiate(Resources.Load("Health"), flip_container) as GameObject).GetComponent<Counter>();
+        power_counter = (Instantiate(Resources.Load("Power"), flip_container) as GameObject).GetComponent<Counter>();
         health_counter.set_value(health);
         power_counter.set_value(power);
 
@@ -120,6 +148,24 @@ public class Unit : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && pressed) {
             mouse_up();
         }
+    }
+
+    public List<object> get_stats() {
+        return new List<object>(){power, health, max_health, speed, range, attacks, cost, upkeep};
+    }
+
+    public UnitState get_state() {
+        int[] state_loc = null;
+        if (board_loc != null) {
+            state_loc = new int[2]{board_loc[0], board_loc[1]};
+        }
+
+        //fix equipping system / tweak debuff system
+        return new UnitState(allegiance, state_loc, get_stats());
+    }
+
+    public void load_state(UnitState state) {
+
     }
 
     //called when left mouse is pressed over unit's collider
@@ -314,7 +360,7 @@ public class Unit : MonoBehaviour
             new string[7][]
         };
 
-        bool empty = true;
+        int num_swaps = 0;
         // If middle row in column is empty or contains allied unit
         if (!game.board[1][board_loc[1]] || game.board[1][board_loc[1]].allegiance == allegiance) {
             //check if each space in the column is valid
@@ -326,15 +372,18 @@ public class Unit : MonoBehaviour
                     else {
                         valid_locations[row][board_loc[1]] = new string[1]{"Swap"};
                     }
-                    empty = false;
+                    num_swaps++;
                 }
             }
         }
-        if (empty) {
+
+        GetSwap swaps = game.handler.trigger("GetSwap", new GetSwap(this, valid_locations, num_swaps)) as GetSwap;
+        valid_locations = swaps.locations;
+        num_swaps = swaps.num_locs;
+
+        if (num_swaps == 0) {
             valid_locations = null;
         }
-
-        valid_locations = (game.handler.trigger("GetSwap", new GetSwap(this, valid_locations)) as GetSwap).locations;
 
         return valid_locations;
     }
@@ -460,6 +509,6 @@ public class Unit : MonoBehaviour
         // Flips unit
         health_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
         power_counter.transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
-        transform.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
+        flip_container.localScale = new Vector3(-1 * transform.localScale.x, transform.localScale.y, 1f);
     }
 }

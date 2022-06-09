@@ -14,24 +14,44 @@ public class AbilityHandler
         {"Turn", new List<ReceivesEvents>()}
     };
 
-    private List<Flag> flags = new List<Flag>();
+    private List<Flag> to_remove = new List<Flag>();
+    private List<Flag> to_add = new List<Flag>();
 
     public void add_subscriber(string type, ReceivesEvents subscriber)
     {
-        subscribed[type].Add(subscriber);
+        to_add.Add(new Flag(type, subscriber));
     }
 
-    public void remove_subscriber(string type, ReceivesEvents subscriber) {
-        flags.Add(new Flag(type, subscriber));
+    public void remove_subscriber(string type, ReceivesEvents subscriber)
+    {
+        to_remove.Add(new Flag(type, subscriber));
     }
 
-    public Event trigger(string type, Event data) {
-        foreach (Flag flag in flags) {
+    public Event trigger(string type, Event data)
+    {
+        //Removed events in remove queue
+        foreach (Flag flag in to_remove) {
             subscribed[flag.type].Remove(flag.subscriber);
         }
-        flags = new List<Flag>();
+        to_remove = new List<Flag>();
+
+        //Add events in add queue
+        foreach (Flag flag in to_add) {
+            subscribed[flag.type].Add(flag.subscriber);
+        }
+        to_add = new List<Flag>();
+
+        //Trigger events
         foreach (ReceivesEvents subscriber in subscribed[type]) {
-            data = subscriber.receive_event(data);
+            bool removed = false;
+            foreach (Flag flag in to_remove) {
+                if (flag.type == type && subscriber == flag.subscriber) {
+                    removed = true;
+                }
+            }
+            if (!removed) {
+                data = subscriber.receive_event(data);
+            }
         }
         return data;
     }
