@@ -20,7 +20,6 @@ Properties:
     - event priority
     - toggle states? goblin cannon, howitzer, low angle, unsieged
     - blob shadows
-    - rename to IReceiveEvents
 */
 
 /* Bugs
@@ -101,7 +100,6 @@ public class Unit : MonoBehaviour
     private bool is_dragging;
     private int drag_tolerance = 20; // # of pixels dragged before drag starts
     
-    public bool in_play = false; // true -> on_board
     public int[] board_loc; // 2d int -> [row, column]
     public Hand hand;
     public bool done = false;
@@ -167,7 +165,7 @@ public class Unit : MonoBehaviour
     }
 
     public void load_state(UnitState state) {
-
+        
     }
 
     //called when left mouse is pressed over unit's collider
@@ -183,7 +181,7 @@ public class Unit : MonoBehaviour
         string[][][] valid_locations = null;
 
         //if card is on board (swapping lanes)
-        if (in_play) {
+        if (board_loc != null) {
             //get some valid placement locations for the board
             valid_locations = get_swap_locations();
         }
@@ -214,7 +212,7 @@ public class Unit : MonoBehaviour
     //called each frame when dragging
     public void drag() {
         //if playing a card from the hand
-        if (!in_play) {
+        if (board_loc == null) {
             //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
             hand.set_to_insert(game.mouse_position);
         }
@@ -237,7 +235,7 @@ public class Unit : MonoBehaviour
     public void end_drag() {
         bool success = false;
         //if not in play (playing from hand) and moused over hand
-        if (!in_play && hand.box_collider.OverlapPoint(game.mouse_position)) {
+        if (board_loc == null && hand.box_collider.OverlapPoint(game.mouse_position)) {
             //insert card into hand
             game.players[allegiance ? 0 : 1].hand.Insert(hand.to_insert, this);
             success = true;
@@ -255,7 +253,7 @@ public class Unit : MonoBehaviour
                 else {
                     action = game.valid_locations[board_pos[0]][board_pos[1]][aux];
                 }
-                if (in_play) {
+                if (board_loc != null) {
                     swap(board_pos, action);
                 }
                 else {
@@ -266,7 +264,7 @@ public class Unit : MonoBehaviour
         }
         //if nothing valid was moused over
         if (!success) {
-            if (in_play) {
+            if (board_loc != null) {
                 set_position(board_loc);
                 //put unit back in the battlefield layer
                 sorting_group.sortingLayerName = "Battlefield";
@@ -342,8 +340,6 @@ public class Unit : MonoBehaviour
             game.board[pos[0]][pos[1]] = this;
             //keep track of location on board
             board_loc = pos;
-            //card is now in play
-            in_play = true;
             //update transform
             set_position(pos);
             //shove me in the battlefield layer
@@ -355,7 +351,7 @@ public class Unit : MonoBehaviour
     }
 
     public string[][][] get_swap_locations() {
-        //instantiate board-sized array of "false"
+        //instantiate board-sized array of "null"
         string[][][] valid_locations = new string[3][][] {
             new string[7][],
             new string[7][],
@@ -488,8 +484,8 @@ public class Unit : MonoBehaviour
             game.board[board_loc[0]][board_loc[1]] = null;
             game.players[allegiance ? 0 : 1].upkeep -= upkeep;
             if (equipment) {
-                if (equipment is ReceivesEvents) {
-                    (equipment as ReceivesEvents).unsubscribe();
+                if (equipment is IReceiveEvents) {
+                    (equipment as IReceiveEvents).unsubscribe();
                 }
                 Destroy(equipment);
             }

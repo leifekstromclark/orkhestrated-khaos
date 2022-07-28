@@ -5,24 +5,24 @@ using UnityEngine;
 public class AbilityHandler
 {
 
-    private Dictionary<string, List<ReceivesEvents>> subscribed = new Dictionary<string, List<ReceivesEvents>>()
+    private Dictionary<string, List<IReceiveEvents>> subscribed = new Dictionary<string, List<IReceiveEvents>>()
     {
-        {"Done", new List<ReceivesEvents>()},
-        {"Move", new List<ReceivesEvents>()},
-        {"Attack", new List<ReceivesEvents>()},
-        {"GetSwap", new List<ReceivesEvents>()},
-        {"Turn", new List<ReceivesEvents>()}
+        {"Done", new List<IReceiveEvents>()},
+        {"Move", new List<IReceiveEvents>()},
+        {"Attack", new List<IReceiveEvents>()},
+        {"GetSwap", new List<IReceiveEvents>()},
+        {"Turn", new List<IReceiveEvents>()}
     };
 
     private List<Flag> to_remove = new List<Flag>();
     private List<Flag> to_add = new List<Flag>();
 
-    public void add_subscriber(string type, ReceivesEvents subscriber)
+    public void add_subscriber(string type, IReceiveEvents subscriber)
     {
         to_add.Add(new Flag(type, subscriber));
     }
 
-    public void remove_subscriber(string type, ReceivesEvents subscriber)
+    public void remove_subscriber(string type, IReceiveEvents subscriber)
     {
         to_remove.Add(new Flag(type, subscriber));
     }
@@ -42,7 +42,7 @@ public class AbilityHandler
         to_add = new List<Flag>();
 
         //Trigger events
-        foreach (ReceivesEvents subscriber in subscribed[type]) {
+        foreach (IReceiveEvents subscriber in subscribed[type]) {
             bool removed = false;
             foreach (Flag flag in to_remove) {
                 if (flag.type == type && subscriber == flag.subscriber) {
@@ -59,9 +59,9 @@ public class AbilityHandler
 
 public class Flag {
     public string type;
-    public ReceivesEvents subscriber;
+    public IReceiveEvents subscriber;
 
-    public Flag(string type, ReceivesEvents subscriber) {
+    public Flag(string type, IReceiveEvents subscriber) {
         this.type = type;
         this.subscriber = subscriber;
     }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public class VoodooBoosta : Equipment, ReceivesEvents
+public class VoodooBoosta : Equipment, IReceiveEvents
 {
 
     private AbilityHandler handler;

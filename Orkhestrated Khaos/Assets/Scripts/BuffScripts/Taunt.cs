@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Taunt : Buff, ReceivesEvents
+public class Taunt : Buff, IReceiveEvents
 {
 
     public int turns_remaining;

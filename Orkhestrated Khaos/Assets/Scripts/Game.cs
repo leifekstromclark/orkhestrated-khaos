@@ -229,8 +229,8 @@ public class Game : MonoBehaviour
             unit.hand = hand;
             Equipment equipment = (Instantiate(Resources.Load("EquipmentPrefabs/" + player.deck_list[index].equipment), unit.transform) as GameObject).GetComponent<Equipment>();
             equipment.equip(unit);
-            if (equipment is ReceivesEvents) {
-                (equipment as ReceivesEvents).subscribe(handler);
+            if (equipment is IReceiveEvents) {
+                (equipment as IReceiveEvents).subscribe(handler);
             }
             player.hand.Add(unit);
             player.deck.RemoveAt(rand);

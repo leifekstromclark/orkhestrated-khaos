@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Sticka : Equipment, ReceivesEvents
+public class Sticka : Equipment, IReceiveEvents
 {
 
     private AbilityHandler handler;

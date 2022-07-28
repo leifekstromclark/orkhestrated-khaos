@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Choppa : Equipment, ReceivesEvents
+public class Choppa : Equipment, IReceiveEvents
 {
 
     private AbilityHandler handler;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BombLobba : Equipment, ReceivesEvents
+public class BombLobba : Equipment, IReceiveEvents
 {
 
     private AbilityHandler handler;
