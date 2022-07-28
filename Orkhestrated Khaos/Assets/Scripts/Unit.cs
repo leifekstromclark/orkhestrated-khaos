@@ -100,8 +100,8 @@ public class Unit : MonoBehaviour
     private bool is_dragging;
     private int drag_tolerance = 20; // # of pixels dragged before drag starts
     
+
     public int[] board_loc; // 2d int -> [row, column]
-    public Hand hand;
     public bool done = false;
 
     // Start is called before the first frame update
@@ -165,7 +165,8 @@ public class Unit : MonoBehaviour
     }
 
     public void load_state(UnitState state) {
-        
+        this.board_loc = state.board_loc;
+        //unfinished
     }
 
     //called when left mouse is pressed over unit's collider
@@ -214,7 +215,7 @@ public class Unit : MonoBehaviour
         //if playing a card from the hand
         if (board_loc == null) {
             //tell hand to get a to_insert space (to achieve visual skipping / rearranging functionality)
-            hand.set_to_insert(game.mouse_position);
+            game.card_bench.set_to_insert(game.mouse_position);
         }
 
         //if moused over board
@@ -235,9 +236,9 @@ public class Unit : MonoBehaviour
     public void end_drag() {
         bool success = false;
         //if not in play (playing from hand) and moused over hand
-        if (board_loc == null && hand.box_collider.OverlapPoint(game.mouse_position)) {
+        if (board_loc == null && game.card_bench.box_collider.OverlapPoint(game.mouse_position)) {
             //insert card into hand
-            game.players[allegiance ? 0 : 1].hand.Insert(hand.to_insert, this);
+            game.players[allegiance ? 0 : 1].hand.Insert(game.card_bench.to_insert, this);
             success = true;
         }
         //if moused over board
@@ -293,7 +294,7 @@ public class Unit : MonoBehaviour
         //set input related variables to default states
         is_dragging = false;
         pressed = false;
-        hand.to_insert = -1;
+        game.card_bench.to_insert = -1;
     }
     
     //gets valid placement (playing out of hand) locations on the board

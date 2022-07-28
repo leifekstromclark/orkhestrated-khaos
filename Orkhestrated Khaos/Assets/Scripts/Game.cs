@@ -76,7 +76,7 @@ public class Game : MonoBehaviour
 
     public Player[] players = new Player[2];
 
-    public Hand hand;
+    public CardBench card_bench;
 
     public AbilityHandler handler = new AbilityHandler();
 
@@ -119,7 +119,7 @@ public class Game : MonoBehaviour
             draw_card(false);
         }
 
-        hand.units = players[0].hand;
+        card_bench.units = players[0].hand;
 
         foreach (Unit unit in players[1].hand) {
             unit.gameObject.SetActive(false);
@@ -226,7 +226,6 @@ public class Game : MonoBehaviour
             Unit unit = (Instantiate(Resources.Load("UnitPrefabs/" + player.deck_list[index].creature)) as GameObject).GetComponent<Unit>();
             unit.allegiance = allegiance;
             unit.game = this;
-            unit.hand = hand;
             Equipment equipment = (Instantiate(Resources.Load("EquipmentPrefabs/" + player.deck_list[index].equipment), unit.transform) as GameObject).GetComponent<Equipment>();
             equipment.equip(unit);
             if (equipment is IReceiveEvents) {
@@ -245,14 +244,14 @@ public class Game : MonoBehaviour
         player.set_supply(new_supply, player.upkeep, new_supply - player.upkeep);
         handler.trigger("Turn", new Turn(turn));
         turn = !turn;
-        foreach (Unit unit in hand.units) {
+        foreach (Unit unit in card_bench.units) {
             unit.gameObject.SetActive(false);
         }
 
         player = players[turn ? 0 : 1];
         player.set_supply(player.supply, player.upkeep, player.supply - player.upkeep);
-        hand.units = player.hand;
-        foreach (Unit unit in hand.units) {
+        card_bench.units = player.hand;
+        foreach (Unit unit in card_bench.units) {
             unit.gameObject.SetActive(true);
         }
         draw_card(turn);

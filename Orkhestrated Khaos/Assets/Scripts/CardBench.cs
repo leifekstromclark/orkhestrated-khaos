@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Hand : MonoBehaviour
+public class CardBench : MonoBehaviour
 {
     public Game game;
     public List<Unit> units;
