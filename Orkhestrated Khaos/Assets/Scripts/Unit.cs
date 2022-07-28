@@ -73,6 +73,8 @@ public class Unit : MonoBehaviour
     public Game game;
     // Reference to game class -> Handles turn and board properties (tentative)
     
+    public int id;
+
     // Unit stats
     public int power;
     public int health;
@@ -161,7 +163,7 @@ public class Unit : MonoBehaviour
         }
 
         //fix equipping system / tweak debuff system
-        return new UnitState(allegiance, state_loc, get_stats());
+        return new UnitState(id, allegiance, state_loc, get_stats());
     }
 
     public void load_state(UnitState state) {
