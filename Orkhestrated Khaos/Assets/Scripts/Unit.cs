@@ -71,8 +71,8 @@ public class Unit : MonoBehaviour
 
     public Game game;
     // Reference to game class -> Handles turn and board properties (tentative)
-    
-    public int id;
+
+    public string unit_name;
 
     // Unit stats
     public int power;
@@ -150,8 +150,19 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public List<object> get_stats() {
+    public virtual List<object> get_stats() {
         return new List<object>(){power, health, max_health, speed, range, attacks, cost, upkeep};
+    }
+
+    public virtual void load_stats(List<object> stats) {
+        power = (int)stats[0];
+        health = (int)stats[1];
+        max_health = (int)stats[2];
+        speed = (int)stats[3];
+        range = (int)stats[4];
+        attacks = (int)stats[5];
+        cost = (int)stats[6];
+        upkeep = (int)stats[7];
     }
 
     public UnitState get_state() {
@@ -160,13 +171,25 @@ public class Unit : MonoBehaviour
             state_loc = new int[2]{board_loc[0], board_loc[1]};
         }
 
-        //fix equipping system / tweak debuff system
-        return new UnitState(id, allegiance, state_loc, get_stats());
+        List<AttachmentState> buff_states = new List<AttachmentState>();
+
+        foreach (Buff buff in buffs) {
+            buff_states.Add(buff.get_state());
+        }
+
+        return new UnitState(unit_name, allegiance, state_loc, get_stats(), equipment.get_state(), buff_states);
     }
 
     public void load_state(UnitState state) {
-        this.board_loc = state.board_loc;
-        //unfinished
+        allegiance = state.allegiance;
+        board_loc = null;
+        if (state.board_loc != null) {
+            board_loc = new int[2] {state.board_loc[0], state.board_loc[1]};
+        }
+        load_stats(state.stats);
+
+        //load on equipment and buffs. give this whole system some love
+
     }
 
     //called when left mouse is pressed over unit's collider

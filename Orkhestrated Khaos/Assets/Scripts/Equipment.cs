@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
-
     public Unit host;
+
+    public string equipment_name;
 
     // Start is called before the first frame update
     void Start()
@@ -22,5 +23,13 @@ public class Equipment : MonoBehaviour
     public virtual void equip(Unit host) {
         this.host = host;
         this.host.equipment = this;
+    }
+
+    public List<object> get_stats() {
+        return null;
+    }
+
+    public AttachmentState get_state() {
+        return new AttachmentState(equipment_name, get_stats());
     }
 }

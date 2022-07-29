@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Buff : MonoBehaviour
 {
-
+    public string buff_name;
     public Unit host;
 
     // Start is called before the first frame update
@@ -23,5 +23,13 @@ public class Buff : MonoBehaviour
         // REMOVE THE DEBUFF FROM GAME, UNIT, AND EVENT HANDLER
         host.buffs.Remove(this);
         Destroy(gameObject);
+    }
+
+    public virtual List<object> get_stats() {
+        return null;
+    }
+
+    public AttachmentState get_state() {
+        return new AttachmentState(buff_name, get_stats());
     }
 }

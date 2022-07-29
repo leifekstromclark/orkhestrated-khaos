@@ -50,6 +50,8 @@ public class Game : MonoBehaviour
     private float[] row_bounds = new float[2];
     private float[] selector_bounds = new float[3];
 
+
+
     public Unit[][] board = new Unit[3][] {
         new Unit[7],
         new Unit[7],
@@ -140,6 +142,29 @@ public class Game : MonoBehaviour
 
     public float get_width(float y) {
         return base_width - (base_width - top_width) * y / projection_height;
+    }
+
+    public GameState get_state() {
+        List<UnitState> unit_states = new List<UnitState>();
+
+        foreach (Unit[] row in board) {
+            foreach (Unit unit in row) {
+                if (unit != null) {
+                    unit_states.Add(unit.get_state());
+                }
+            }
+        }
+        foreach (Player player in players) {
+            foreach (Unit unit in player.hand) {
+                unit_states.Add(unit.get_state());
+            }
+        }
+
+        return new GameState(unit_states);
+    }
+
+    public void load_state(GameState state) {
+        
     }
 
 
