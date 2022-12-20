@@ -25,7 +25,7 @@ public class Equipment : MonoBehaviour
         this.host.equipment = this;
     }
 
-    public List<object> get_stats() {
+    public virtual List<object> get_stats() {
         return null;
     }
 

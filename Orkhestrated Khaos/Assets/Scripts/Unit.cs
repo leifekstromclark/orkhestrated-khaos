@@ -188,7 +188,7 @@ public class Unit : MonoBehaviour
         }
         load_stats(state.stats);
 
-        //load on equipment and buffs. give this whole system some love
+        //load on equipment and buffs. give this whole system some love 
 
     }
 
